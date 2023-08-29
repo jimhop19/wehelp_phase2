@@ -37,60 +37,48 @@ def attractionsList():
 	pageFromQueryString = request.args.get("page")	
 	keywordRegex = "^\w*$"
 	keywordFromQueryString = request.args.get("keyword")
-	
 	#check if Query String is correct format
 	if re.search(intRegex,pageFromQueryString) == None:
 		return {"error":True,"message":"Page number should be interger"}
 	elif keywordFromQueryString != None and re.search(keywordRegex,keywordFromQueryString) == None:
 		return {"error":True,"message":"Please do not enter special characters"}
+	
 	#search in database
 	mydbConnection = mydb.get_connection()	
 	cursor = mydbConnection.cursor()
 	if keywordFromQueryString != None:
-		cursor.execute("SELECT * FROM attraction WHERE name LIKE %(keywordPlus)s OR mrt = %(keyword)s",{"keywordPlus":"%"+keywordFromQueryString+"%","keyword":keywordFromQueryString})
+		cursor.execute("SELECT * FROM attraction WHERE name LIKE %(keywordPlus)s OR mrt = %(keyword)s LIMIT %(page)s,12",{"keywordPlus":"%"+keywordFromQueryString+"%","keyword":keywordFromQueryString,"page":int(pageFromQueryString)*12})
 	else:
-		cursor.execute("SELECT * FROM attraction")
-	
+		cursor.execute("SELECT * FROM attraction LIMIT %(page)s,12",{"page":int(pageFromQueryString)*12})
 	attractionsList = cursor.fetchall()
 	mydbConnection.close()	
-	
-	#How many pages in total
-	page = int(request.args.get("page"))
-	pageCount = len(attractionsList)//12
 
 	result = {}
 	result["data"] = []
+	for x in attractionsList:		
+		result["data"].append(createAttractionData(x))
+	#next page
+	if len(result["data"]) <12:
+		result["nextpage"] = None
+	else:
+		result["nextpage"] = int(pageFromQueryString)+1
 
-	def createAttractionListbyPage(startpoint, endpoint):
-			for x in range(startpoint,endpoint):
-				data = {}
-				data["id"] = attractionsList[x][0]
-				data["name"] = attractionsList[x][1]
-				data["category"] = attractionsList[x][2]
-				data["description"] = attractionsList[x][3]
-				data["address"] = attractionsList[x][4]
-				data["transport"] = attractionsList[x][5]
-				data["mrt"] = attractionsList[x][6]
-				data["lat"] = attractionsList[x][7]
-				data["lng"] = attractionsList[x][8]
-				data["images"] = splitJPGURL(attractionsList[x][9])
-				result["data"].append(data)
-	
-	
-	
-	if page >= 0 and page < pageCount :
-		result["nextPage"] = page+1
-		createAttractionListbyPage(page*12,(page+1)*12)
-	#the last page
-	elif page == pageCount :
-		result["nextPage"] = None
-		createAttractionListbyPage(page*12,len(attractionsList))	
-	else :
-		result["nextPage"] = None
-		result["data"] = None
-	
 	return json.dumps(result,ensure_ascii = False)
+	
 
+def createAttractionData(source):
+	data = {}
+	data["id"] = source[0]
+	data["name"] = source[1]
+	data["category"] = source[2]
+	data["description"] = source[3]
+	data["address"] = source[4]
+	data["transport"] = source[5]
+	data["mrt"] = source[6]
+	data["lat"] = source[7]
+	data["lng"] = source[8]
+	data["images"] = splitJPGURL(source[9])
+	return data	
 def splitJPGURL(string):
 		regex = "http.*?\.jpg"
 		jpgFile = re.findall(regex,string,re.IGNORECASE)
@@ -106,25 +94,13 @@ def attraction_byID(attractionID):
 		cursor.execute("SELECT * FROM attraction WHERE id = %(ID)s",{"ID":attractionID})
 		dataFromDatabase = cursor.fetchall()
 		mydbConnection.close()	
-		print(dataFromDatabase)	
+		
 		if dataFromDatabase == []:
 			return{"error":True,"message":"attractionID is incorrect"}
-		else:
-			data = {}
-			data["id"] = dataFromDatabase[0][0]
-			data["name"] = dataFromDatabase[0][1]
-			data["category"] = dataFromDatabase[0][2]
-			data["description"] = dataFromDatabase[0][3]
-			data["address"] = dataFromDatabase[0][4]
-			data["transport"] = dataFromDatabase[0][5]
-			data["mrt"] = dataFromDatabase[0][6]
-			data["lat"] = dataFromDatabase[0][7]
-			data["lng"] = dataFromDatabase[0][8]
-			data["images"] = splitJPGURL(dataFromDatabase[0][9])		
-
+		else:			
 			result = {}
-			result["data"] = data
-			return json.dumps(result,ensure_ascii = False)
+			result["data"] = createAttractionData(dataFromDatabase[0])
+			return json.dumps(result,ensure_ascii = False)		
 		
 @app.route("/api/mrts",methods=["GET"])
 def mrts():
