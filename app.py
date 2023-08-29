@@ -59,9 +59,9 @@ def attractionsList():
 		result["data"].append(createAttractionData(x))
 	#next page
 	if len(result["data"]) <12:
-		result["nextpage"] = None
+		result["nextPage"] = None
 	else:
-		result["nextpage"] = int(pageFromQueryString)+1
+		result["nextPage"] = int(pageFromQueryString)+1
 
 	return json.dumps(result,ensure_ascii = False)
 	
