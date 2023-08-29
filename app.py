@@ -76,10 +76,7 @@ def attractionsList():
 				data["images"] = splitJPGURL(attractionsList[x][9])
 				result["data"].append(data)
 	
-	def splitJPGURL(string):
-		regex = "http.*?\.jpg"
-		jpgFile = re.findall(regex,string,re.IGNORECASE)
-		return jpgFile
+	
 	
 	if page >= 0 and page < pageCount :
 		result["nextPage"] = page+1
@@ -94,6 +91,11 @@ def attractionsList():
 	
 	return json.dumps(result,ensure_ascii = False)
 
+def splitJPGURL(string):
+		regex = "http.*?\.jpg"
+		jpgFile = re.findall(regex,string,re.IGNORECASE)
+		return jpgFile
+
 @app.route("/api/attraction/<int:attractionID>", methods=["GET"])
 def attraction_byID(attractionID):
 	if attractionID < 0:
@@ -102,14 +104,26 @@ def attraction_byID(attractionID):
 		mydbConnection = mydb.get_connection()
 		cursor = mydbConnection.cursor()
 		cursor.execute("SELECT * FROM attraction WHERE id = %(ID)s",{"ID":attractionID})
-		data = cursor.fetchall()
-		mydbConnection.close()
-
-		result = {}
-		result["data"] = data
-		if data == []:
+		dataFromDatabase = cursor.fetchall()
+		mydbConnection.close()	
+		print(dataFromDatabase)	
+		if dataFromDatabase == []:
 			return{"error":True,"message":"attractionID is incorrect"}
 		else:
+			data = {}
+			data["id"] = dataFromDatabase[0][0]
+			data["name"] = dataFromDatabase[0][1]
+			data["category"] = dataFromDatabase[0][2]
+			data["description"] = dataFromDatabase[0][3]
+			data["address"] = dataFromDatabase[0][4]
+			data["transport"] = dataFromDatabase[0][5]
+			data["mrt"] = dataFromDatabase[0][6]
+			data["lat"] = dataFromDatabase[0][7]
+			data["lng"] = dataFromDatabase[0][8]
+			data["images"] = splitJPGURL(dataFromDatabase[0][9])		
+
+			result = {}
+			result["data"] = data
 			return json.dumps(result,ensure_ascii = False)
 		
 @app.route("/api/mrts",methods=["GET"])
