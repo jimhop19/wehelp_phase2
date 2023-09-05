@@ -38,7 +38,7 @@
             <span class="material-symbols-outlined" id="mrtListBarRightArrow">navigate_next</span>
             <script>
                 //create MRT buttons
-                fetch("http://127.0.0.1:3000/api/mrts")
+                fetch("http://52.64.119.167:3000/api/mrts")
                 .then((response)=>{
                     return response.json();
                 })
@@ -90,9 +90,9 @@
                 getDataAndCreateNewCard(0)
                 function getDataAndCreateNewCard(page,keyword){
                     if (keyword != null){
-                        apiURL = "http://127.0.0.1:3000/api/attractions?page="+page.toString(10)+"&keyword="+keyword
+                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)+"&keyword="+keyword
                     }else{
-                        apiURL = "http://127.0.0.1:3000/api/attractions?page="+page.toString(10)
+                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)
                     }
                     fetch(apiURL)
                         .then((response)=>{
