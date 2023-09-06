@@ -1,6 +1,6 @@
 .navigation {
   width: 1200px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 0px 50px;
   display: flex;
   justify-content: space-between;
@@ -24,8 +24,8 @@
 @media (max-width: 500px) {
   .navigation {
     width: 100%;
-    margin: 5px auto;
-    padding: 20px;
+    margin: 0 auto;
+    padding: 10px 20px;
     box-sizing: border-box;
   }
 }
@@ -51,7 +51,7 @@
 
 .heroSectionBackground {
   width: 100%;
-  height: 480px;
+  height: 320px;
   display: flex;
   align-items: center;
   margin-bottom: 40px;
@@ -63,16 +63,11 @@
 }
 .heroSectionBackground img {
   width: 100%;
-  min-height: 480px;
+  height: 320px;
   -o-object-fit: cover;
      object-fit: cover;
   position: absolute;
   z-index: -1;
-}
-@media (min-width: 1920px) {
-  .heroSectionBackground img {
-    height: 480px;
-  }
 }
 .heroSectionBackground .heroSection {
   width: 1200px;
@@ -128,6 +123,10 @@
   font-style: normal;
   font-weight: 700;
   line-height: 13.3px;
+  box-shadow: 0px 0px 20px 0px #ABC;
+}
+.heroSectionBackground .heroSection .heroSection_searchBar .searchBar_input:focus {
+  color: #000000;
 }
 @media (max-width: 700px) {
   .heroSectionBackground .heroSection .heroSection_searchBar .searchBar_input {
@@ -142,6 +141,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.heroSectionBackground .heroSection .heroSection_searchBar .searchBar_submit:hover {
+  cursor: pointer;
 }
 
 .main {
@@ -172,9 +174,20 @@
 }
 .main .main_listBar {
   display: flex;
+  align-items: center;
 }
-.main .main_listBar span {
-  vertical-align: middle;
+.main .main_listBar img {
+  width: 32px;
+  display: block;
+}
+.main .main_listBar img:hover {
+  cursor: pointer;
+}
+.main .main_listBar #mrtListBarLeftArrow:hover {
+  background-image: url("/static/button/leftButtonHovered.png");
+}
+.main .main_listBar #mrtListBarRightArrow:hover {
+  background-image: url("/static/button/rightButoonHovered.png");
 }
 .main .main_listBar ul {
   white-space: nowrap;
@@ -183,11 +196,15 @@
 .main .main_listBar ul li {
   display: inline-block;
   padding: 0px 15px;
-  vertical-align: middle;
+  vertical-align: baseline;
+}
+.main .main_listBar ul li:hover {
+  color: #000000;
+  cursor: pointer;
 }
 .main .main_content {
   max-width: 100%;
-  margin-top: 20px;
+  margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 30px;
