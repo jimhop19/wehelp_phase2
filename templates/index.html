@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taipei Trip</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <div class="navigation">
+        <div class="navigation_title">
+            <h2>台北一日遊 </h2>            
+        </div>
+        <div class="navigation_bar">
+            <p>預定行程</p>
+            <p>登入/註冊</p>
+        </div>        
+    </div>
+    <div class="heroSectionBackground">
+        <img src="https://s3-alpha-sig.figma.com/img/8e51/49c7/686e7b3ebaa358e8438012f5d6a7a7b6?Expires=1694995200&Signature=LWmjn3vIZnf-Wzy9AVzcGhMX5ZMj1h8aIbkh9H5GsR6xnjHYAw6gAHFQqGfbrR-q3uQCTevWWajKoSjwZOTEkeiMaoCGLS~IB9QiHri1VWCMjAbFtEJW40S8diPz9KrELyE8EY05yO4rHFCStYrkw-AEB1bp725ARyhTi9SAOfO0B4mFziqr~Z6AYgyH2FWLwPCmXWpE5IbTX9WpT9kuybHXIYuFWp9RqxgcAJuxnVirsFcNIR8dW6pbdvmd9v4zfjFLAIQxacJVn4R7mtGU2oVoFIz5cb2wruD9EvH0qlBs40lDPR~lCa7lqk1oM2wSUPz9hgvoqnkhsg4~bPqYrQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" alt="HomePagePicture">
+        <div class="heroSection">
+            <h1>輕鬆享受台北一日悠閒</h1>
+            <p>探索每個角落，體驗城市的深度旅遊行程</p>
+            <div class="heroSection_searchBar">
+                <input type="text" class="searchBar_input" placeholder="輸入景點名稱查詢" id = "searchBar" name = "searchBar">
+                <div class="searchBar_submit">
+                    <span class="material-symbols-outlined">search</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="main">
+        <div class="main_listBar">
+            <img src="/static/button/leftButton.png" alt="leftArrow"
+            id="mrtListBarLeftArrow">                      
+            <ul class="mrtListUlTag"></ul>
+            <img src="/static/button/rightButton.png" alt="rightArrow" id="mrtListBarRightArrow">            
+            <script>
+                //create MRT buttons
+                fetch("http://52.64.119.167:3000/api/mrts")
+                .then((response)=>{
+                    return response.json();
+                })
+                .then((response)=>{
+                    const mrtListFromAPI = response.data
+                    createMrtList(mrtListFromAPI)
+                })
+                .catch((error)=>{
+                    console.log("error")
+                })
+                let mrtButtons = []
+                function createMrtList(mrtList){
+                    for(i = 0; i < mrtList.length; i++){
+                        const mrtListUlTag = document.querySelector(".mrtListUlTag")                
+                        const createMrt = document.createElement("li");
+                        createMrt.id = mrtList[i]
+                        createMrt.className = "mrtButton"
+                        createMrt.textContent = mrtList[i]                    
+                        mrtListUlTag.appendChild(createMrt)
+                    }
+                    //addEventListener for putting mrt into search bar input
+                    mrtButtons = document.querySelectorAll(".mrtButton")
+                    mrtButtons.forEach(mrtButton => {
+                        mrtButton.addEventListener("click",function(){
+                            search(mrtButton.id)
+                        })
+                    })
+                }
+                //scroll the mrt list bar
+                const mrtListLeftArrow = document.getElementById("mrtListBarLeftArrow")
+                const mrtListRightArrow = document.getElementById("mrtListBarRightArrow")
+                const mrtList = document.querySelector(".mrtListUlTag")
+                mrtListLeftArrow.addEventListener("click",function(){
+                    const mrtListWidth = mrtList.offsetWidth-50
+                    mrtList.scrollBy({
+                        left:-mrtListWidth,
+                        top:0,
+                        behavior:"smooth"})
+                })
+                mrtListRightArrow.addEventListener("click",function(){
+                    const mrtListWidth = mrtList.offsetWidth-50
+                    mrtList.scrollBy({
+                        left:mrtListWidth,
+                        top:0,
+                        behavior:"smooth"})
+                })
+                
+            </script>                        
+        </div>
+        <div class="main_content">
+            <script>
+                let nextPage = 0;
+                let apiURL = "";
+                getDataAndCreateNewCard(0)
+                function getDataAndCreateNewCard(page,keyword){
+                    return new Promise((resolve,reject)=>{
+                        if (keyword != null){
+                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)+"&keyword="+keyword
+                    }else{
+                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)
+                    }
+                    fetch(apiURL)
+                        .then((response)=>{
+                            return response.json();
+                        })
+                        .then((response)=>{
+                            const fetchResult = response;
+                            const data = fetchResult.data;
+                            nextPage = fetchResult.nextPage;
+                            if (data.length === 0){                                
+                                return null                                
+                            }else{
+                                createNewCard(data);
+                                resolve(data)
+                            }                            
+                        })                        
+                        .catch((error)=>{
+                            console.log("error")
+                        });    
+                    })                                     
+                }
+                function createNewCard(data){                    
+                    for (let i = 0; i < data.length; i++){
+                        //create newCard
+                        const content = document.querySelector(".main_content");
+                        const newCardDiv = document.createElement("div");
+                        newCardDiv.className = "itemCard";
+                        const newCardPicDiv = document.createElement("div");
+                        newCardPicDiv.className = "picDivInCard";
+                        const newCardPic = document.createElement("img");
+                        newCardPic.src = data[i].images[0];
+                        const newCardName = document.createElement("p");
+                        newCardName.textContent = data[i].name;
+                        newCardName.className = "bold"
+                        const newCardDescription = document.createElement("div");
+                        newCardDescription.className = "descriptionInCard";
+                        const newCardMrt = document.createElement("p")
+                        newCardMrt.textContent = data[i].mrt
+                        const newCardCategory = document.createElement("p")
+                        newCardCategory.textContent = data[i].category
+
+                        content.appendChild(newCardDiv);
+                        newCardDiv.appendChild(newCardPicDiv);
+                        newCardPicDiv.appendChild(newCardPic);
+                        newCardPicDiv.appendChild(newCardName);
+                        newCardDiv.appendChild(newCardDescription);
+                        newCardDescription.appendChild(newCardMrt);
+                        newCardDescription.appendChild(newCardCategory);
+                    }
+                    
+                }                   
+            </script>
+            <script>
+                const itemCards = document.querySelector(".main_content");
+                const clickSearchButton = document.querySelector(".searchBar_submit");
+                clickSearchButton.addEventListener("click", function(){
+                    search();                                    
+                })
+                let searchBarInput = document.querySelector(".searchBar_input")
+                function search(input){
+                    let keyword = searchBarInput.value;
+                    if(input != null){                    
+                        keyword = input;
+                        searchBarInput.value = input;
+                    }
+                    itemCards.innerHTML = "";                    
+                    getDataAndCreateNewCard(0,keyword)
+                }
+            </script>
+        </div>
+    </div>
+    <div class="footer">
+        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>
+    <script>
+        //when user scroll down the page and footer is revealed, get data and create new cards
+        let observer = new IntersectionObserver(
+                getMoreItemCards                   
+            )
+        observer.observe(document.querySelector(".footer")); 
+               
+        function getMoreItemCards(entries, observer){
+                if (entries[0].isIntersecting & nextPage != null & nextPage!= 0){
+                    const value = document.querySelector(".searchBar_input").value;
+                    function stopObservingAndRunFunction(callback){
+                        observer.unobserve(document.querySelector(".footer"));
+                        getDataAndCreateNewCard(nextPage,value)
+                        .then(() =>{
+                            callback()
+                        })
+                        .catch((error)=>{
+                            console.log("error")
+                        })
+                    }
+                    function startObserving(){
+                        observer.observe(document.querySelector(".footer"));
+                    }
+                    stopObservingAndRunFunction(startObserving);                    
+                }
+            }
+    </script>
+</body>
+</html>
