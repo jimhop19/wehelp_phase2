@@ -9,7 +9,7 @@ dbconfg = {
 	"username" : "root",
 	"password" : "12345678",
 	"db" : "attraction_database",
-	
+
 }
 mydb = mysql.connector.pooling.MySQLConnectionPool(
 	pool_name="attraction",

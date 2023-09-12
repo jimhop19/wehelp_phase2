@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taipei Trip</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/index_all.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
     <div class="navigation">
         <div class="navigation_title">
-            <h2>台北一日遊 </h2>            
+            <h2><a href="" id="navigation_titleHref">台北一日遊</a></h2>            
         </div>
         <div class="navigation_bar">
             <p>預定行程</p>
@@ -38,8 +38,11 @@
             <ul class="mrtListUlTag"></ul>
             <img src="/static/button/rightButton.png" alt="rightArrow" id="mrtListBarRightArrow">            
             <script>
+                let IP = "http://127.0.0.1:3000/"
+                const titlehypertext = document.getElementById("navigation_titleHref")
+                titlehypertext.href = IP
                 //create MRT buttons
-                fetch("http://52.64.119.167:3000/api/mrts")
+                fetch(IP+"/api/mrts")
                 .then((response)=>{
                     return response.json();
                 })
@@ -97,9 +100,9 @@
                 function getDataAndCreateNewCard(page,keyword){
                     return new Promise((resolve,reject)=>{
                         if (keyword != null){
-                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)+"&keyword="+keyword
+                        apiURL = IP+"/api/attractions?page="+page.toString(10)+"&keyword="+keyword
                     }else{
-                        apiURL = "http://52.64.119.167:3000/api/attractions?page="+page.toString(10)
+                        apiURL = IP+"/api/attractions?page="+page.toString(10)
                     }
                     fetch(apiURL)
                         .then((response)=>{
@@ -127,6 +130,8 @@
                         const content = document.querySelector(".main_content");
                         const newCardDiv = document.createElement("div");
                         newCardDiv.className = "itemCard";
+                        const newCardHref = document.createElement("a")
+                        newCardHref.href = IP + "attraction/" + data[i].id
                         const newCardPicDiv = document.createElement("div");
                         newCardPicDiv.className = "picDivInCard";
                         const newCardPic = document.createElement("img");
@@ -140,12 +145,13 @@
                         newCardMrt.textContent = data[i].mrt
                         const newCardCategory = document.createElement("p")
                         newCardCategory.textContent = data[i].category
-
+                        
                         content.appendChild(newCardDiv);
-                        newCardDiv.appendChild(newCardPicDiv);
+                        newCardDiv.appendChild(newCardHref);
+                        newCardHref.appendChild(newCardPicDiv);
                         newCardPicDiv.appendChild(newCardPic);
                         newCardPicDiv.appendChild(newCardName);
-                        newCardDiv.appendChild(newCardDescription);
+                        newCardHref.appendChild(newCardDescription);
                         newCardDescription.appendChild(newCardMrt);
                         newCardDescription.appendChild(newCardCategory);
                     }

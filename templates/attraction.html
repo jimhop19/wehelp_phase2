@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taipei Trip Attractions</title>
+    <link rel="stylesheet" href="/static/attraction_all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <div class="navigation">
+        <div class="navigation_title">            
+            <h2><a href="" id="navigation_titleHref">台北一日遊</a></h2>            
+        </div>
+        <div class="navigation_bar">
+            <p>預定行程</p>
+            <p>登入/註冊</p>
+        </div>        
+    </div>
+    <hr>
+    <div class="main">
+        <div class="main_content">
+            <div class="content_photoGallery" id="itemPhotoGallery">
+                <img src="/static/button/attraction_btn_leftArrow.png" alt="" id="attractionLeftArrow">
+                <img src="/static/button/attraction_btn_rightArrow.png" alt="" id="attractionRightArrow">
+                <div id="spotList"></div>
+            </div>
+            <div class="content_bookingSection">
+                <h3 id="itemName">itemName</h3>
+                <br>
+                <p class="bold" id="itemCategoryAndMrt">Mrt</p>
+                <br>                
+                <div class="content_bookingForm">
+                    <p class="bold">訂購導覽行程</p>                    
+                    <p class="p_content">以此景點為中心的一日行程，帶您探索城市角落故事</p>                    
+                    <form action="POST">
+                        <label for="bookingDate" class="label">選擇日期：</label>
+                        <input type="date" name="bookingDate" id="bookingDate" value="2023-09-12" required>
+                        <br>       
+                        <label for="bookingTime" class="label">選擇時間：</label>
+                        <label>
+                            <input type="radio" class="radioInput" name="bookingTime" id="bookingTimeAM" value="上半天" checked onclick="checkAndRevealPrice()">
+                            <img src="/static/button/radio btn.svg" alt="" class="uncheckedButton">
+                            <img src="/static/button/radio btn_checked.svg" alt="" class="checkedButton">
+                        </label>
+                        <label for="bookingTimeAM" class="radioLabel">上半天</label>
+                        <label>
+                            <input type="radio" class="radioInput" name="bookingTime" id="bookingTimePM" value="下半天" onclick="checkAndRevealPrice()">
+                            <img src="/static/button/radio btn.svg" alt="" class="uncheckedButton">
+                            <img src="/static/button/radio btn_checked.svg" alt="" class="checkedButton">
+                        </label>
+                        <label for="bookingTimePM" class="radioLabel">下半天</label>
+                        <br>
+                        <label for="bookingPrice" class="label">導覽費用：</label>
+                        <span id="bookingPrice"></span>
+                        <script>
+                            const bookingDate = document.getElementById("bookingDate")
+                            const today = new Date()                            
+                            const format = today.getFullYear().toString() + "-0" + (today.getMonth()+1).toString() + "-" + today.getDate().toString()
+                            bookingDate.value = format
+                            bookingDate.min = format                            
+                            // document.getElementById("bookingDate").value = today
+                            checkAndRevealPrice()
+                            function checkAndRevealPrice(){
+                                const bookingTimeAM = document.getElementById("bookingTimeAM");
+                                const bookingTimePM = document.getElementById("bookingTimePM");
+                                const bookingPrice = document.getElementById("bookingPrice")
+                                if(bookingTimeAM.checked){
+                                    bookingPrice.innerHTML = "新台幣 2000 元"
+                                }else if(bookingTimePM.checked){
+                                    bookingPrice.innerHTML = "新台幣 2500 元"
+                                }
+                            }
+                        </script>
+                        <br>
+                        <btn>開始預約行程</btn>
+                        
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        <div class="main_information">
+            <p class="p_content" id="itemDescription">內容</p>
+            <br>
+            <p class="p_content bold">景點地址：</p>
+            <p class="p_content" id="itemAddress">地址</p>
+            <br>
+            <p class="p_content bold">交通方式：</p>
+            <p class="p_content" id="itemTransportation">交通</p>
+        </div>
+    </div>
+    <script>  
+        let IP = "http://127.0.0.1:3000/"    
+        let itemID = parseInt(document.location.href.substring(33))
+        //insert name,category,mrt... into html
+        initialState().then(() =>{
+            createPhotoGallery()
+        })
+        function initialState(){
+            return new Promise((resolve,reject) => {
+                if(Number.isInteger(itemID)){
+                    fetch(IP+"api/attraction/"+itemID)
+                    .then((response) => {
+                        return response.json()
+                    })
+                    .then((response) => {
+                        const data = response.data
+                        getDataAndFilltheBlank(data)
+                    })
+                    .then(() => {
+                        resolve()
+                    })
+                }
+            })
+        }
+        
+        function getDataAndFilltheBlank(data){
+            const itemPhotoGallery = document.getElementById("itemPhotoGallery")
+            const itemName = document.getElementById("itemName");
+            const itemCategoryAndMrt = document.getElementById("itemCategoryAndMrt");
+            const itemDescription = document.getElementById("itemDescription");
+            const itemAddress = document.getElementById("itemAddress");
+            const itemTransportation = document.getElementById("itemTransportation");
+            for (let i = 0; i < data.images.length; i++){
+                const itemPhoto = document.createElement("img");
+                itemPhoto.alt = "Attraction Photo"
+                itemPhoto.src = data.images[i]
+                itemPhoto.id = "itemPhoto"
+                itemPhotoGallery.appendChild(itemPhoto)
+                const spot = document.createElement("img")
+                spot.src = "/static/button/circle_default.svg"
+                spot.className = "spot"          
+                const spotList = document.getElementById("spotList")            
+                spotList.appendChild(spot)
+            }
+            const firstPhoto = document.querySelector("#itemPhoto")
+            firstPhoto.style.opacity = 1
+            itemName.innerHTML = data.name;
+            itemCategoryAndMrt.innerHTML = data.category + " at " + data.mrt;
+            itemDescription.innerHTML = data.description;
+            itemAddress.innerHTML = data.address;
+            itemTransportation.innerHTML = data.transport
+        }
+        //add hypertext on webisite title
+        const titlehypertext = document.getElementById("navigation_titleHref")
+        titlehypertext.href = IP
+        //PhotoGallery    
+        function createPhotoGallery(){            
+            const allSpots = document.querySelectorAll(".spot")
+            const allPhotos = document.querySelectorAll("#itemPhoto")
+            allSpots[0].src = "/static/button/circle_current.svg"
+            let photoIndex = 0
+            const attractionLeftArrow = document.getElementById("attractionLeftArrow")
+            const attractionRightArrow = document.getElementById("attractionRightArrow")
+            //go left
+            attractionLeftArrow.addEventListener("click",()=>{
+                switchPhoto(-1)                
+            })
+            //go right
+            attractionRightArrow.addEventListener("click",()=>{
+                switchPhoto(1)
+            })
+            //automatically change photo
+            let autoSlideShow = setInterval(()=>{
+                switchPhoto(1);
+            },5000)
+            attractionLeftArrow.addEventListener("mouseenter",()=>{                
+                clearInterval(autoSlideShow)
+            })
+            attractionLeftArrow.addEventListener("mouseleave",()=>{                
+                autoSlideShow = setInterval(()=>{
+                    switchPhoto(1);
+                },5000)
+            })
+            attractionRightArrow.addEventListener("mouseenter",()=>{                
+                clearInterval(autoSlideShow)
+            })
+            attractionRightArrow.addEventListener("mouseleave",()=>{                
+                autoSlideShow = setInterval(()=>{
+                    switchPhoto(1);
+                },5000)
+            })
+            function switchPhoto(num){                
+                if(photoIndex+num == (allPhotos.length)){
+                    photoIndex = 0
+                }else if(photoIndex+num < 0 ){
+                    photoIndex = allPhotos.length-1     
+                }else{
+                    photoIndex = photoIndex+num
+                }
+                for (let item of allPhotos){
+                    item.style.opacity = 0
+                }
+                for (let item of allSpots){
+                    item.src = "/static/button/circle_default.svg"
+                }
+                allPhotos[photoIndex].style.opacity = 1;
+                allSpots[photoIndex].src = "/static/button/circle_current.svg"
+            }
+        }
+    </script>
+    <div class="footer">
+        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>
+</body>
+</html>
