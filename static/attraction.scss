@@ -189,6 +189,19 @@ hr{
                 }      
                 form{
                     padding-top: 10px;
+                    input[type=date]{
+                        padding: 7px 10px;
+                    }
+                    input::-webkit-calendar-picker-indicator {
+                        padding-left: 55px;
+                        background: url("/static/button/icon_calendar.png");
+                        background-repeat: no-repeat;
+                        background-position: right top;
+                        background-size: contain;
+                        @media (max-width:359px) {
+                            padding-left: 0;
+                        }
+                    }
                 }
                 .label{
                     color: var(--secondary-color-gray-70);

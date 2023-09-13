@@ -230,6 +230,21 @@ hr {
 .main .main_content .content_bookingSection .content_bookingForm form {
   padding-top: 10px;
 }
+.main .main_content .content_bookingSection .content_bookingForm form input[type=date] {
+  padding: 7px 10px;
+}
+.main .main_content .content_bookingSection .content_bookingForm form input::-webkit-calendar-picker-indicator {
+  padding-left: 55px;
+  background: url("/static/button/icon_calendar.png");
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: contain;
+}
+@media (max-width: 359px) {
+  .main .main_content .content_bookingSection .content_bookingForm form input::-webkit-calendar-picker-indicator {
+    padding-left: 0;
+  }
+}
 .main .main_content .content_bookingSection .content_bookingForm .label {
   color: var(--secondary-color-gray-70);
   margin-bottom: 24px;
