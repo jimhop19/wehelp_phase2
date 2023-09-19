@@ -14,16 +14,17 @@
         </div>
         <div class="navigation_bar">
             <p>預定行程</p>
-            <p>登入/註冊</p>
+            <p id="signInAndSignUp">登入/註冊</p>
+            <p id="signOut" onclick="signOut()">登出</p>            
         </div>        
     </div>
-    <div class="heroSectionBackground">
-        <img src="https://s3-alpha-sig.figma.com/img/8e51/49c7/686e7b3ebaa358e8438012f5d6a7a7b6?Expires=1694995200&Signature=LWmjn3vIZnf-Wzy9AVzcGhMX5ZMj1h8aIbkh9H5GsR6xnjHYAw6gAHFQqGfbrR-q3uQCTevWWajKoSjwZOTEkeiMaoCGLS~IB9QiHri1VWCMjAbFtEJW40S8diPz9KrELyE8EY05yO4rHFCStYrkw-AEB1bp725ARyhTi9SAOfO0B4mFziqr~Z6AYgyH2FWLwPCmXWpE5IbTX9WpT9kuybHXIYuFWp9RqxgcAJuxnVirsFcNIR8dW6pbdvmd9v4zfjFLAIQxacJVn4R7mtGU2oVoFIz5cb2wruD9EvH0qlBs40lDPR~lCa7lqk1oM2wSUPz9hgvoqnkhsg4~bPqYrQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4" alt="HomePagePicture">
+    <div class="heroSectionBackground">       
+        <img src="/static/img/heroSection_photo.png" alt="HomePagePicture">
         <div class="heroSection">
             <h1>輕鬆享受台北一日悠閒</h1>
             <p>探索每個角落，體驗城市的深度旅遊行程</p>
             <div class="heroSection_searchBar">
-                <input type="text" class="searchBar_input" placeholder="輸入景點名稱查詢" id = "searchBar" name = "searchBar">
+                <input type="text" class="searchBar_input" placeholder="輸入景點名稱查詢" id = "searchBar" name = "searchBar" autofocus>
                 <div class="searchBar_submit">
                     <span class="material-symbols-outlined">search</span>
                 </div>
@@ -81,6 +82,13 @@
                         left:-mrtListWidth,
                         top:0,
                         behavior:"smooth"})
+                    //when scrollbar reach the end of left side
+                    if (mrtList.scrollLeft == 0){
+                        mrtList.style.transform = "translateX(5px)";
+                        setTimeout(() => {
+                            mrtList.style.transform = "translateX(0)";
+                        },200)                         
+                    }
                 })
                 mrtListRightArrow.addEventListener("click",function(){
                     const mrtListWidth = mrtList.offsetWidth-50
@@ -88,6 +96,12 @@
                         left:mrtListWidth,
                         top:0,
                         behavior:"smooth"})
+                    if (mrtList.scrollWidth-mrtList.offsetWidth-mrtList.scrollLeft <= 0){
+                        mrtList.style.transform = "translateX(-5px)";
+                        setTimeout(() => {
+                            mrtList.style.transform = "translateX(0)";
+                        },200)
+                    }
                 })
                 
             </script>                        
@@ -100,10 +114,10 @@
                 function getDataAndCreateNewCard(page,keyword){
                     return new Promise((resolve,reject)=>{
                         if (keyword != null){
-                        apiURL = IP+"/api/attractions?page="+page.toString(10)+"&keyword="+keyword
-                    }else{
-                        apiURL = IP+"/api/attractions?page="+page.toString(10)
-                    }
+                            apiURL = IP+"/api/attractions?page="+page.toString(10)+"&keyword="+keyword
+                        }else{
+                            apiURL = IP+"/api/attractions?page="+page.toString(10)
+                        }
                     fetch(apiURL)
                         .then((response)=>{
                             return response.json();
@@ -161,24 +175,57 @@
             <script>
                 const itemCards = document.querySelector(".main_content");
                 const clickSearchButton = document.querySelector(".searchBar_submit");
+                let searchBarInput = document.querySelector(".searchBar_input")
                 clickSearchButton.addEventListener("click", function(){
                     search();                                    
                 })
-                let searchBarInput = document.querySelector(".searchBar_input")
+                searchBarInput.addEventListener("keypress",function(event){
+                    if (event.key === "Enter"){                        
+                        search();
+                        searchBarInput.blur()
+                    }
+                })
+                searchBarInput.addEventListener("focus",function(){
+                    searchBarInput.classList.remove("searchBar_input--after")
+                })
                 function search(input){
                     let keyword = searchBarInput.value;
                     if(input != null){                    
                         keyword = input;
                         searchBarInput.value = input;
                     }
-                    itemCards.innerHTML = "";                    
-                    getDataAndCreateNewCard(0,keyword)
+                    itemCards.innerHTML = "";
+                    getDataAndCreateNewCard(0,keyword);
+                    searchBarInput.classList.add("searchBar_input--after")
                 }
             </script>
         </div>
     </div>
     <div class="footer">
         <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>
+    <div class="darkenBackground"> 
+        <div class="memberPage">
+            <div class="decorationBar"></div>
+            <img src="/static/button/icon_close.png" alt="close" id="closePage">
+            <div class="memberForm" id = "signInForm">
+                <h3>登入會員帳號</h3>
+                <input type="text" placeholder="輸入電子信箱" id="signInEmailInput">
+                <input type="password" placeholder="輸入密碼" id="signInPasswordInput">
+                <btn id ="signInFormButton" onclick="signIn()">登入帳戶</btn>
+                <p id="signInSuccessMessage"></p>
+                <p id="textForSignIn">還沒有帳戶？<span onclick="switchToSignUp()">點此註冊</span></p>
+            </div>
+            <div class="memberForm" id="signUpForm">
+                <h3>註冊會員帳號</h3>
+                <input type="text" placeholder="輸入姓名" id="signUpName" >
+                <input type="text" placeholder="輸入電子信箱" id="signUpEmail">
+                <input type="password" placeholder="輸入密碼" id="signUpPassword">
+                <btn id ="signUpFormButton" onclick="signUp()">註冊新帳戶</btn>
+                <p id="successMessage"></p>
+                <p id="textForSignUp">已經有帳戶了？<span onclick="switchToSignIn()">點此登入</span></p>
+            </div>
+        </div>               
     </div>
     <script>
         //when user scroll down the page and footer is revealed, get data and create new cards
@@ -206,6 +253,7 @@
                     stopObservingAndRunFunction(startObserving);                    
                 }
             }
-    </script>
+    </script>    
+    <script src="/static/javascript/memberSystem.js"></script>
 </body>
 </html>

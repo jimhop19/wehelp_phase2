@@ -15,8 +15,7 @@
         width: 400px;        
     }
     @media (max-width:500px) {
-        width: 100%;
-        margin: 0 auto;        
+        width: 100%;              
         padding: 10px 20px;
         box-sizing: border-box;
         border-bottom: 0;
@@ -31,8 +30,14 @@
     }
     .navigation_bar {
         display: flex;
+        #signOut{
+            display: none;
+        }  
         p{
             margin-left: 10px;
+            &:hover{
+                cursor: pointer;
+            }
             @media(max-width: 346px){            
                 width: 32px;
                 white-space: nowrap;
@@ -88,7 +93,7 @@ hr{
             overflow: hidden;
             position: relative;
             display: flex;
-            justify-content: center;
+            justify-content: center;            
             @media (max-width:700px){
                 width: 400px;
                 margin-right: 0;
@@ -96,6 +101,40 @@ hr{
             @media (max-width:500px) {
                 width: 100%;
                 border-radius: 0;                     
+            }
+            .itemPhotoFrame{
+                position: absolute;                
+                min-height: 400px;                                
+                width:100%;
+                height: 100%;
+                display: block;
+                object-fit: cover;                                      
+                opacity: 1;
+                transition: 1s;
+            }                                                                    
+            img{
+                transition: 1s;             
+                opacity: 0;
+                object-fit: cover;
+                width: 100%;             
+                height: 100%;
+            }
+            #spotList{
+                display: flex;
+                justify-content: center;
+                align-items: end;                
+                width: 100%;
+                margin-bottom: 13px;                
+                .spot{
+                    width: 12px;
+                    height: 12px;
+                    min-width: 0;
+                    min-height: 0;
+                    opacity: 0.75;
+                    position: relative;
+                    z-index: 1;
+                    padding: 0px 6px;                         
+                }
             }
             #attractionLeftArrow{
                 width: 36px;
@@ -107,6 +146,8 @@ hr{
                 position: absolute;
                 left: 10px;
                 top: 50%;
+                transform: translateY(-50%);
+                transition: 0s;               
                 &:hover{
                     cursor: pointer;
                 }            
@@ -121,35 +162,11 @@ hr{
                 position: absolute;
                 right: 10px;
                 top: 50%;
+                transform: translateY(-50%);
+                transition: 0s;
                 &:hover{
                     cursor: pointer;
                 }             
-            }
-            #spotList{
-                display: flex;
-                justify-content: center;
-                align-items: end;                
-                width: 100%;
-                margin-bottom: 13px;
-                .spot{
-                    width: 12px;
-                    height: 12px;
-                    min-width: 0;
-                    min-height: 0;
-                    opacity: 0.75;
-                    position: relative;
-                    z-index: 1;
-                    padding: 0px 6px;                         
-                }
-            }                                        
-            img{                
-                position: absolute;
-                min-width: 540px;
-                height: inherit;
-                min-height: 400px;                
-                display: block;
-                opacity: 0;
-                transition: 1s;                                               
             }
                   
         }
@@ -198,6 +215,12 @@ hr{
                         background-repeat: no-repeat;
                         background-position: right top;
                         background-size: contain;
+                        @media (max-width:900px) {
+                            padding-left: 0;
+                        }
+                        @media (max-width:700px) {
+                            padding-left: 55px;
+                        }
                         @media (max-width:359px) {
                             padding-left: 0;
                         }
@@ -313,5 +336,74 @@ hr{
     text-align: center;
     p{
         color: #FFFFFF;
+    }
+}
+body{
+    position: relative;
+}
+.darkenBackground{
+    display: none;
+    width: 100vw;
+    height: 100%;     
+    background-color: rgb(0,0,0,0.25);
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    
+    .memberPage{
+        width: 340px;
+        margin: 80px auto;
+        border-radius: 6px;        
+        background:  #FFF;
+        box-shadow: 0px 4px 60px 0px #AAA;
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+        .decorationBar{                        
+            height: 10px;
+            background: var(--additional-color-dark-cyan-gradient-0-deg, linear-gradient(270deg, #378 0%, #6AB 100%));
+        }
+        img{
+            width: 16px;            
+            position: absolute;
+            padding: 7px;         
+            right: 10px;
+            top: 20px;            
+        }
+        .memberForm{
+            padding: 15px;                                              
+            input{
+                border-radius: 5px;
+                border: 1px solid #CCCCCC;
+                display: block;
+                box-sizing: border-box;
+                margin: 15px auto;
+                padding: 15px;
+                width: 100%;              
+            }
+            btn{                
+                display: block;                               
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: #FFF;
+                background-color: var(--primary-color-cyan-70);
+                &:hover{
+                    cursor: pointer;
+                }
+            }
+            p{
+                margin-top: 10px;
+                padding: 5px;
+                span:hover{
+                    cursor: pointer;
+                }
+            }
+        } 
+    }
+    #signUpForm{
+        display: none;
+        #successMessage{
+            display: none;
+        }
     }
 }
