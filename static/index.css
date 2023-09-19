@@ -1,7 +1,7 @@
 .navigation {
   width: 1200px;
-  margin: 10px auto;
-  padding: 0px 50px;
+  margin: 0px auto;
+  padding: 10px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,7 +24,6 @@
 @media (max-width: 500px) {
   .navigation {
     width: 100%;
-    margin: 0 auto;
     padding: 10px 20px;
     box-sizing: border-box;
   }
@@ -40,8 +39,14 @@
 .navigation .navigation_bar {
   display: flex;
 }
+.navigation .navigation_bar #signOut {
+  display: none;
+}
 .navigation .navigation_bar p {
   margin-left: 10px;
+}
+.navigation .navigation_bar p:hover {
+  cursor: pointer;
 }
 @media (max-width: 346px) {
   .navigation .navigation_bar p {
@@ -129,13 +134,13 @@
   line-height: 13.3px;
   box-shadow: 0px 0px 20px 0px #ABC;
 }
-.heroSectionBackground .heroSection .heroSection_searchBar .searchBar_input:focus {
-  color: #000000;
-}
 @media (max-width: 700px) {
   .heroSectionBackground .heroSection .heroSection_searchBar .searchBar_input {
     width: 300px;
   }
+}
+.heroSectionBackground .heroSection .heroSection_searchBar .searchBar_input--after {
+  color: #000000;
 }
 .heroSectionBackground .heroSection .heroSection_searchBar .searchBar_submit {
   color: var(--secondary-color-gray-10);
@@ -183,19 +188,28 @@
 .main .main_listBar img {
   width: 32px;
   display: block;
+  background-repeat: no-repeat;
 }
 .main .main_listBar img:hover {
   cursor: pointer;
 }
+.main .main_listBar #mrtListBarLeftArrow {
+  padding-right: 10px;
+}
 .main .main_listBar #mrtListBarLeftArrow:hover {
   background-image: url("/static/button/leftButtonHovered.png");
 }
+.main .main_listBar #mrtListBarRightArrow {
+  padding-left: 10px;
+}
 .main .main_listBar #mrtListBarRightArrow:hover {
   background-image: url("/static/button/rightButoonHovered.png");
+  background-position: right;
 }
 .main .main_listBar ul {
   white-space: nowrap;
   overflow: hidden;
+  transition: 0.2s;
 }
 .main .main_listBar ul li {
   display: inline-block;
@@ -275,4 +289,74 @@
 }
 .footer p {
   color: #FFFFFF;
+}
+
+body {
+  position: relative;
+}
+
+.darkenBackground {
+  display: none;
+  width: 100vw;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  position: absolute;
+  top: 0;
+}
+.darkenBackground .memberPage {
+  width: 340px;
+  margin: 80px auto;
+  border-radius: 6px;
+  background: #FFF;
+  box-shadow: 0px 4px 60px 0px #AAA;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+.darkenBackground .memberPage .decorationBar {
+  height: 10px;
+  background: var(--additional-color-dark-cyan-gradient-0-deg, linear-gradient(270deg, #378 0%, #6AB 100%));
+}
+.darkenBackground .memberPage img {
+  width: 16px;
+  position: absolute;
+  padding: 7px;
+  right: 10px;
+  top: 20px;
+}
+.darkenBackground .memberPage .memberForm {
+  padding: 15px;
+}
+.darkenBackground .memberPage .memberForm input {
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  display: block;
+  box-sizing: border-box;
+  margin: 15px auto;
+  padding: 15px;
+  width: 100%;
+}
+.darkenBackground .memberPage .memberForm btn {
+  display: block;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: #FFF;
+  background-color: var(--primary-color-cyan-70);
+}
+.darkenBackground .memberPage .memberForm btn:hover {
+  cursor: pointer;
+}
+.darkenBackground .memberPage .memberForm p {
+  margin-top: 10px;
+  padding: 5px;
+}
+.darkenBackground .memberPage .memberForm p d span:hover {
+  cursor: pointer;
+}
+.darkenBackground #signUpForm {
+  display: none;
+}
+.darkenBackground #signUpForm #successMessage {
+  display: none;
 }/*# sourceMappingURL=index.css.map */

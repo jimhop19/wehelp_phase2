@@ -14,7 +14,8 @@
         </div>
         <div class="navigation_bar">
             <p>預定行程</p>
-            <p>登入/註冊</p>
+            <p id="signInAndSignUp">登入/註冊</p>
+            <p id="signOut" onclick="signOut()">登出</p>  
         </div>        
     </div>
     <hr>
@@ -22,7 +23,7 @@
         <div class="main_content">
             <div class="content_photoGallery" id="itemPhotoGallery">
                 <img src="/static/button/attraction_btn_leftArrow.png" alt="" id="attractionLeftArrow">
-                <img src="/static/button/attraction_btn_rightArrow.png" alt="" id="attractionRightArrow">
+                <img src="/static/button/attraction_btn_rightArrow.png" alt="" id="attractionRightArrow">                
                 <div id="spotList"></div>
             </div>
             <div class="content_bookingSection">
@@ -56,10 +57,15 @@
                         <script>
                             const bookingDate = document.getElementById("bookingDate")
                             const today = new Date()                            
-                            const format = today.getFullYear().toString() + "-0" + (today.getMonth()+1).toString() + "-" + today.getDate().toString()
+                            let zeroInFrontOfMonth = ""
+                            if (today.getMonth()+1 > 9){
+                                zeroInFrontOfMonth = "-";
+                            }else{
+                                zeroInFrontOfMonth = "-0";
+                            }                            
+                            const format = today.getFullYear().toString() + zeroInFrontOfMonth + (today.getMonth()+1).toString() + "-" + today.getDate().toString()
                             bookingDate.value = format
-                            bookingDate.min = format                            
-                            // document.getElementById("bookingDate").value = today
+                            bookingDate.min = format
                             checkAndRevealPrice()
                             function checkAndRevealPrice(){
                                 const bookingTimeAM = document.getElementById("bookingTimeAM");
@@ -91,8 +97,9 @@
         </div>
     </div>
     <script>  
-        let IP = "http://52.64.119.167:3000/"    
-        let itemID = parseInt(document.location.href.substring(37))
+        let IP = "http://52.64.119.167:3000/"
+        //Website URL = IP + "attraction/" + {itemID}
+        let itemID = parseInt(document.location.href.substring(IP.length+11))        
         //insert name,category,mrt... into html
         initialState().then(() =>{
             createPhotoGallery()
@@ -116,6 +123,7 @@
         }
         
         function getDataAndFilltheBlank(data){
+            // const itemPhotoGallery = document.getElementById("itemPhotoGallery")
             const itemPhotoGallery = document.getElementById("itemPhotoGallery")
             const itemName = document.getElementById("itemName");
             const itemCategoryAndMrt = document.getElementById("itemCategoryAndMrt");
@@ -123,11 +131,14 @@
             const itemAddress = document.getElementById("itemAddress");
             const itemTransportation = document.getElementById("itemTransportation");
             for (let i = 0; i < data.images.length; i++){
+                const itemPhotoFrame = document.createElement("div")
+                itemPhotoFrame.className = "itemPhotoFrame"
                 const itemPhoto = document.createElement("img");
                 itemPhoto.alt = "Attraction Photo"
                 itemPhoto.src = data.images[i]
                 itemPhoto.id = "itemPhoto"
-                itemPhotoGallery.appendChild(itemPhoto)
+                itemPhotoFrame.appendChild(itemPhoto)
+                itemPhotoGallery.appendChild(itemPhotoFrame)
                 const spot = document.createElement("img")
                 spot.src = "/static/button/circle_default.svg"
                 spot.className = "spot"          
@@ -155,18 +166,18 @@
             const attractionRightArrow = document.getElementById("attractionRightArrow")
             //go left
             attractionLeftArrow.addEventListener("click",()=>{
-                switchPhoto(-1)                
+                switchPhoto(-1);               
             })
             //go right
             attractionRightArrow.addEventListener("click",()=>{
-                switchPhoto(1)
+                switchPhoto(1);
             })
             //automatically change photo
             let autoSlideShow = setInterval(()=>{
                 switchPhoto(1);
-            },5000)
+            },5000)            
             attractionLeftArrow.addEventListener("mouseenter",()=>{                
-                clearInterval(autoSlideShow)
+                clearInterval(autoSlideShow);
             })
             attractionLeftArrow.addEventListener("mouseleave",()=>{                
                 autoSlideShow = setInterval(()=>{
@@ -174,14 +185,18 @@
                 },5000)
             })
             attractionRightArrow.addEventListener("mouseenter",()=>{                
-                clearInterval(autoSlideShow)
+                clearInterval(autoSlideShow);               
             })
             attractionRightArrow.addEventListener("mouseleave",()=>{                
                 autoSlideShow = setInterval(()=>{
                     switchPhoto(1);
-                },5000)
+                },5000)                
             })
-            function switchPhoto(num){                
+            function switchPhoto(num){
+                //current photo and spot
+                allPhotos[photoIndex].style.opacity = 0;
+                allSpots[photoIndex].src = "/static/button/circle_default.svg"
+                //change index            
                 if(photoIndex+num == (allPhotos.length)){
                     photoIndex = 0
                 }else if(photoIndex+num < 0 ){
@@ -189,12 +204,7 @@
                 }else{
                     photoIndex = photoIndex+num
                 }
-                for (let item of allPhotos){
-                    item.style.opacity = 0
-                }
-                for (let item of allSpots){
-                    item.src = "/static/button/circle_default.svg"
-                }
+                //next photo and spot
                 allPhotos[photoIndex].style.opacity = 1;
                 allSpots[photoIndex].src = "/static/button/circle_current.svg"
             }
@@ -203,5 +213,29 @@
     <div class="footer">
         <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
     </div>
+    <div class="darkenBackground"> 
+        <div class="memberPage">
+            <div class="decorationBar"></div>
+            <img src="/static/button/icon_close.png" alt="close" id="closePage">
+            <div class="memberForm" id = "signInForm">
+                <h3>登入會員帳號</h3>
+                <input type="text" placeholder="輸入電子信箱" id="signInEmailInput">
+                <input type="password" placeholder="輸入密碼" id="signInPasswordInput">
+                <btn id ="signInFormButton" onclick="signIn()">登入帳戶</btn>
+                <p id="signInSuccessMessage"></p>
+                <p id="textForSignIn">還沒有帳戶？<span onclick="switchToSignUp()">點此註冊</span></p>
+            </div>
+            <div class="memberForm" id="signUpForm">
+                <h3>註冊會員帳號</h3>
+                <input type="text" placeholder="輸入姓名" id="signUpName">
+                <input type="text" placeholder="輸入電子信箱" id="signUpEmail">
+                <input type="password" placeholder="輸入密碼" id="signUpPassword">
+                <btn id ="signUpFormButton" onclick="signUp()">註冊新帳戶</btn>
+                <p id="successMessage"></p>
+                <p id="textForSignUp">已經有帳戶了？<span onclick="switchToSignIn()">點此登入</span></p>
+            </div>
+        </div>               
+    </div>    
+    <script src="/static/javascript/memberSystem.js"></script>    
 </body>
 </html>

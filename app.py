@@ -31,6 +31,80 @@ def booking():
 def thankyou():
 	return render_template("thankyou.html")
 
+@app.route("/api/user",methods=["POST"])
+def signUp():
+	signUpData = json.loads(request.data)	
+	name = signUpData["name"]
+	email = signUpData["email"]
+	password = signUpData["password"]
+	signUpRegex = "^\w+$"
+	emailRegex = "^\w+@\w+.\w+$"
+	mydbConnection = mydb.get_connection()
+	cursor = mydbConnection.cursor()
+	cursor.execute("SELECT email FROM member WHERE email = %(email)s",{"email":email})
+	alreadyInUseEmail = cursor.fetchall()
+	mydbConnection.close()	
+	if re.search(signUpRegex,name) == None or re.search(emailRegex,email) == None or re.search(signUpRegex,password) == None:		
+		return{"error":True,"message":"不得含有特殊字元"}
+	elif alreadyInUseEmail != []:		
+		return{"error":True,"message":"此電子信箱已經註冊過"}
+	else:
+		mydbConnection = mydb.get_connection()
+		cursor = mydbConnection.cursor()
+		cursor.execute("INSERT INTO member (name,email,password) VALUE(%s,%s,%s)",(name,signUpData["email"],signUpData["password"]))
+		mydbConnection.commit()
+		mydbConnection.close()		
+		return {"ok":True}	
+@app.route("/api/user/auth",methods=["GET","PUT"])
+def signIn():
+	import jwt
+	key = "secret"
+	from datetime import datetime,timezone,timedelta
+	#check sign in status
+	if request.method == "GET":		
+		try:				
+			string = request.headers["Authorization"]
+			token = string[7:]			
+			jwt.decode(token, key, algorithms="HS256")
+			mydbConnection = mydb.get_connection()
+			cursor = mydbConnection.cursor()
+			cursor.execute("SELECT * FROM member WHERE token = %(token)s",{"token":token})
+			data = cursor.fetchall()
+			mydbConnection.close()			
+			return {"data":{"id":data[0][0],"name":data[0][1],"email":data[0][2]}}
+		except jwt.ExpiredSignatureError:
+			return {"data" : None}
+	#signin		
+	elif request.method == "PUT":
+		signInData = json.loads(request.data)	
+		email = signInData["email"]		
+		password = signInData["password"]
+		signUpRegex = "^\w+$"
+		emailRegex = "^\w+@\w+.\w+$"
+		if re.search(emailRegex,email) == None or re.search(signUpRegex,password) == None:
+			return {"error":True,"message":"帳號或密碼格式錯誤"}
+		mydbConnection = mydb.get_connection()
+		cursor = mydbConnection.cursor()
+		cursor.execute("SELECT password,token FROM member WHERE email = %(email)s",{"email":email})
+		checkResult = cursor.fetchall()		
+		
+		if checkResult != []:
+			passwordFromDatabase = checkResult[0][0]			
+			if password == passwordFromDatabase:
+				jwt_payload ={"exp": datetime.now(tz=timezone.utc) + timedelta(days=7)}
+				encodedToken = jwt.encode(jwt_payload, key, algorithm="HS256")
+				cursor.execute("UPDATE member SET token = %(token)s WHERE email = %(email)s",{"token":encodedToken,"email":email})
+				mydbConnection.commit()
+				mydbConnection.close()
+				return {"token":encodedToken}
+			else:
+				mydbConnection.close()
+				return {"error":True,"message":"密碼錯誤"}
+		else:
+			mydbConnection.close()
+			return{"error":True,"message":"此e-mail尚未註冊"}
+
+
 @app.route("/api/attractions", methods=["GET"])
 def attractionsList():		
 	intRegex = "^\d*$"
