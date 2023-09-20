@@ -368,7 +368,10 @@ body{
             position: absolute;
             padding: 7px;         
             right: 10px;
-            top: 20px;            
+            top: 20px;
+            &:hover{
+                cursor: pointer;
+            }              
         }
         .memberForm{
             padding: 15px;                                              

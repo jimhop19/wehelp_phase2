@@ -427,6 +427,9 @@ body {
   right: 10px;
   top: 20px;
 }
+.darkenBackground .memberPage img:hover {
+  cursor: pointer;
+}
 .darkenBackground .memberPage .memberForm {
   padding: 15px;
 }

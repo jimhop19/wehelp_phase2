@@ -38,7 +38,7 @@ def signUp():
 	email = signUpData["email"]
 	password = signUpData["password"]
 	signUpRegex = "^\w+$"
-	emailRegex = "^\w+@\w+.\w+$"
+	emailRegex = "^\w+@\w+\.\w+$"
 	mydbConnection = mydb.get_connection()
 	cursor = mydbConnection.cursor()
 	cursor.execute("SELECT email FROM member WHERE email = %(email)s",{"email":email})
@@ -64,14 +64,9 @@ def signIn():
 	if request.method == "GET":		
 		try:				
 			string = request.headers["Authorization"]
-			token = string[7:]			
-			jwt.decode(token, key, algorithms="HS256")
-			mydbConnection = mydb.get_connection()
-			cursor = mydbConnection.cursor()
-			cursor.execute("SELECT * FROM member WHERE token = %(token)s",{"token":token})
-			data = cursor.fetchall()
-			mydbConnection.close()			
-			return {"data":{"id":data[0][0],"name":data[0][1],"email":data[0][2]}}
+			token = string[7:]
+			dataFromToken = jwt.decode(token, key, algorithms="HS256")			
+			return{"data":{"id":dataFromToken["id"],"name":dataFromToken["name"],"email":dataFromToken["email"]}}
 		except jwt.ExpiredSignatureError:
 			return {"data" : None}
 	#signin		
@@ -80,18 +75,18 @@ def signIn():
 		email = signInData["email"]		
 		password = signInData["password"]
 		signUpRegex = "^\w+$"
-		emailRegex = "^\w+@\w+.\w+$"
+		emailRegex = "^\w+@\w+\.\w+$"
 		if re.search(emailRegex,email) == None or re.search(signUpRegex,password) == None:
 			return {"error":True,"message":"帳號或密碼格式錯誤"}
 		mydbConnection = mydb.get_connection()
 		cursor = mydbConnection.cursor()
-		cursor.execute("SELECT password,token FROM member WHERE email = %(email)s",{"email":email})
+		cursor.execute("SELECT password,id,name,email FROM member WHERE email = %(email)s",{"email":email})
 		checkResult = cursor.fetchall()		
 		
 		if checkResult != []:
-			passwordFromDatabase = checkResult[0][0]			
-			if password == passwordFromDatabase:
-				jwt_payload ={"exp": datetime.now(tz=timezone.utc) + timedelta(days=7)}
+			passwordFromDatabase = checkResult[0][0]					
+			if password == passwordFromDatabase:				
+				jwt_payload ={"exp": datetime.now(tz=timezone.utc) + timedelta(days=7),"id":checkResult[0][1],"name":checkResult[0][2],"email":checkResult[0][3]}
 				encodedToken = jwt.encode(jwt_payload, key, algorithm="HS256")
 				cursor.execute("UPDATE member SET token = %(token)s WHERE email = %(email)s",{"token":encodedToken,"email":email})
 				mydbConnection.commit()

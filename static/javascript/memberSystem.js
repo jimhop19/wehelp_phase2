@@ -41,7 +41,7 @@ function signIn(){
     const password = document.getElementById("signInPasswordInput").value
     const signInSuccessMessage = document.getElementById("signInSuccessMessage");
     signInSuccessMessage.style.display = "none"
-    const emailRegex = /^\w+@\w+.+\w+$/;
+    const emailRegex = /^\w+@\w+\.+\w+$/;
     const signInData = {
         "email":email,
         "password":password
@@ -99,9 +99,9 @@ function checkSignInStatus(){
         }).then((response) => {
             return response.json();
         }).then((result) =>{
-            if (result.data == null){
+            if (result.data == null){                
                 return
-            }else{
+            }else{                
                 signInAndSignUp.style.display = "none"
                 signOutButton.style.display = "block"                    
             }
@@ -119,7 +119,7 @@ function signUp(){
         "email":signUpEmail,
         "password":signUpPassword
     }
-    const emailRegex = /^\w+@\w+.+\w+$/;
+    const emailRegex = /^\w+@\w+\.+\w+$/;
     if (signUpName == ""){
         successMessage.textContent = "請輸入姓名";
         successMessage.style.display = "block";   
