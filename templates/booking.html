@@ -197,6 +197,7 @@
                 itemTime.innerHTML = "<span class = 'bold'>時間：</span>"+ transferTimeToChinese
                 const itemPrice = document.createElement("p");                
                 itemPrice.innerHTML = "<span class = 'bold'>費用：</span>"+ inputData[i].price;
+                itemPrice.id = "itemPrice"
                 totalPrice += inputData[i].price                
                 const itemAddress = document.createElement("p");                
                 itemAddress.innerHTML = "<span class = 'bold'>地點：</span>"+ inputData[i].attraction.address;
@@ -223,7 +224,11 @@
             }).then((response) => {
                 return response.json();
             }).then((result) => {
-                document.querySelector("#main_bookingItem"+thisElementID).remove()          
+                document.querySelector("#main_bookingItem"+thisElementID).remove()
+                let newPrice = 0
+                const totalPriceContent = document.getElementById("totalPrice")
+                document.querySelectorAll("#itemPrice").forEach((e)=> {newPrice+=parseInt(e.textContent.match(/\d+/)[0])})
+                totalPriceContent.textContent = newPrice       
                 return        
             })
         }
