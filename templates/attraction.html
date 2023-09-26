@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taipei Trip Attractions</title>
-    <link rel="stylesheet" href="/static/attraction_all.css">
+    <link rel="stylesheet" href="/static/css/attraction_all.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
@@ -13,11 +13,11 @@
             <h2><a href="" id="navigation_titleHref">台北一日遊</a></h2>            
         </div>
         <div class="navigation_bar">
-            <p>預定行程</p>
+            <p onclick="redirectToBooking()">預定行程</p>
             <p id="signInAndSignUp">登入/註冊</p>
             <p id="signOut" onclick="signOut()">登出</p>  
         </div>        
-    </div>
+    </div>   
     <hr>
     <div class="main">
         <div class="main_content">
@@ -79,7 +79,7 @@
                             }
                         </script>
                         <br>
-                        <btn>開始預約行程</btn>
+                        <btn onclick="createNewBooking()">開始預約行程</btn>
                         
                     </form>
                 </div>
@@ -236,6 +236,59 @@
             </div>
         </div>               
     </div>    
-    <script src="/static/javascript/memberSystem.js"></script>    
+    <script src="/static/javascript/memberSystem.js"></script> 
+    <script>
+        function createNewBooking(){ 
+            if (checkSignInStatus() == false){
+                memberPage.style.display = "block";              
+                switchToSignIn();
+            }else{
+                let newBookingURL = IP + "api/booking"
+                let token = localStorage.token
+                const bookingDate = document.getElementById("bookingDate").value
+                let bookingTime = ""
+                const bookingTimeAM = document.getElementById("bookingTimeAM").checked
+                const bookingTimePM = document.getElementById("bookingTimePM").checked
+                if(bookingTimeAM){
+                    bookingTime = "morning"                
+                }else if (bookingTimePM){
+                    bookingTime = "afternoon"
+                }
+                const bookingPrice = parseInt(document.getElementById("bookingPrice").innerHTML.match(/\d+/)[0])            
+                let newBookingData = {
+                    "attractionId": itemID,
+                    "date": bookingDate,
+                    "time": bookingTime,
+                    "price": bookingPrice
+                }
+                fetch(newBookingURL,{
+                    method:"POST",
+                    headers : {
+                    "Authorization": `Bearer ${token}`
+                    },            
+                    body:JSON.stringify(newBookingData)
+                }).then((response)=>{
+                    return response.json();
+                }).then((result) =>{
+                    console.log(result);
+                    return window.location.replace(IP+"booking")
+                })  
+            }
+            
+        }
+
+        // fetch(testURL,{
+        //     method:"GET",
+        //     headers : {
+        //     "Authorization": `Bearer ${token}`
+        //     }
+        // }).then((response)=>{
+        //     return response.json();
+        // }).then((result) =>{
+        //     console.log(result);
+        // })
+        // let ID = 14
+        // 
+    </script>  
 </body>
 </html>

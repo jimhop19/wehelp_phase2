@@ -145,6 +145,9 @@ hr {
   opacity: 1;
   transition: 1s;
 }
+.main .main_content .content_photoGallery .itemPhotoFrame #itemPhoto {
+  background-color: var(--secondary-color-gray-20);
+}
 .main .main_content .content_photoGallery img {
   transition: 1s;
   opacity: 0;
@@ -157,7 +160,6 @@ hr {
   display: flex;
   justify-content: center;
   align-items: end;
-  width: 100%;
   margin-bottom: 13px;
 }
 .main .main_content .content_photoGallery #spotList .spot {

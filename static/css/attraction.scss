@@ -111,20 +111,22 @@ hr{
                 object-fit: cover;                                      
                 opacity: 1;
                 transition: 1s;
+                #itemPhoto{
+                    background-color: var(--secondary-color-gray-20);;
+                }
             }                                                                    
             img{
                 transition: 1s;             
                 opacity: 0;
                 object-fit: cover;
                 width: 100%;             
-                height: 100%;
+                height: 100%;                
             }
             #spotList{
                 display: flex;
                 justify-content: center;
                 align-items: end;                
-                width: 100%;
-                margin-bottom: 13px;                
+                margin-bottom: 13px;                             
                 .spot{
                     width: 12px;
                     height: 12px;
@@ -133,7 +135,7 @@ hr{
                     opacity: 0.75;
                     position: relative;
                     z-index: 1;
-                    padding: 0px 6px;                         
+                    padding: 0px 6px;
                 }
             }
             #attractionLeftArrow{

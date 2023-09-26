@@ -260,6 +260,7 @@
   display: block;
   -o-object-fit: cover;
      object-fit: cover;
+  background-color: var(--secondary-color-gray-20);
 }
 .main .main_content .itemCard .picDivInCard p {
   display: block;
