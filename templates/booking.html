@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taipei Trip</title>
     <link rel="stylesheet" href="/static/css/booking_all.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> 
+    <script >        
+        if (localStorage.token == undefined){
+            window.href.replace(IP)
+        }
+    </script>  
 </head>
 <body>    
     <div class="navigation">
@@ -21,58 +26,7 @@
         <div class="navigation_bar">
             <p onclick="window.location.replace(IP)">預定行程</p>            
             <p id="signOut" onclick="signOut()">登出</p>            
-        </div>
-        <script>
-            window.onload = checkSignInStatus
-            let token = localStorage.token
-            function checkSignInStatus(){
-                const signInURL = IP + "api/user/auth"
-                const signOutButton = document.getElementById("signOut");
-                if (token == undefined){
-                    return window.location.replace(IP);
-                }else{
-                    fetch(signInURL,{
-                    method : "GET",
-                    headers : {
-                        "Authorization": `Bearer ${token}`
-                    }
-                    }).then((response) => {
-                        return response.json();
-                    }).then((result) =>{
-                        if (result.data == null){                
-                            return window.location.replace(IP);
-                        }else{                                        
-                            signOutButton.style.display = "block";
-                            const userName = document.getElementById("userName");
-                            userName.innerHTML = result.data.name;
-                        }
-                    }).then(() => {
-                        getBookingDetail();                        
-                    })
-                }            
-            }
-            let bookingItemArray = []
-            function getBookingDetail(){
-                let bookingDetailURL = IP + "api/booking"
-                fetch(bookingDetailURL,{
-                    method : "GET",
-                    headers : {
-                        "Authorization": `Bearer ${token}`
-                    }}).then((response) => {
-                        return response.json()
-                    }).then((result) => {
-                        bookingItemArray = result.data;
-                    }).then(() => {
-                        createBookingItem(bookingItemArray) ;
-                    })
-            }            
-        </script> 
-        <script>
-            function signOut(){
-                localStorage.removeItem("token")
-                return window.location.replace(IP)                
-            }
-        </script>        
+        </div>              
     </div>
     <hr class="navigationSeperateLine">
     <div class="main">
@@ -80,7 +34,7 @@
             <btn class="bold">您好，<span id="userName"></span>，待預訂的行程如下：</btn>
         </div>
         <p class="messageForNull">目前沒有任何待預訂的行程</p>
-        <hr>
+        <hr class="seperateLine">
         <div class="main_inputSection">
             <btn class="bold">您的聯絡資訊</btn>
             <table>
@@ -111,7 +65,7 @@
             </table>        
             <p class="noticeMessage bold">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
         </div>
-        <hr>
+        <hr class="seperateLine">
         <div class="main_inputSection">
             <btn class="bold">信用卡付款資訊</btn>
             <table>
@@ -141,7 +95,7 @@
                 </tr>
             </table>                    
         </div>
-        <hr>
+        <hr class="seperateLine">
         <div class="main_confirmSection">
             <p class="bold">總價：新台幣 <span id="totalPrice"></span> 元</p>
             <div class="orderButton">
@@ -150,15 +104,65 @@
         </div>
     </div>
     <script>
-        function createBookingItem(inputData){
-            let totalPrice = 0;
-            if(inputData == null){                         
-                const messageForNull = document.querySelector(".messageForNull")
-                messageForNull.style.display = "block"
-            }else if(inputData == []){
-                const messageForNull = document.querySelector(".messageForNull")
-                messageForNull.style.display = "block"
+        let token = localStorage.token
+        window.onload = checkSignInStatus()
+        function checkSignInStatus(){
+            const signInURL = IP + "api/user/auth"
+            const signOutButton = document.getElementById("signOut");
+            if (token == undefined){
+                return window.location.replace(IP);
             }else{
+                document.body.style.display = "block"
+                fetch(signInURL,{
+                method : "GET",
+                headers : {
+                    "Authorization": `Bearer ${token}`
+                }
+                }).then((response) => {
+                    return response.json();
+                }).then((result) =>{
+                    if (result.data == null){                
+                        return window.location.replace(IP);
+                    }else{                                        
+                        signOutButton.style.display = "block";
+                        const userName = document.getElementById("userName");
+                        userName.innerHTML = result.data.name;
+                    }
+                }).then(() => {
+                    getBookingDetail();                        
+                })
+            }            
+        }
+        let bookingItemArray = []
+        function getBookingDetail(){
+            let bookingDetailURL = IP + "api/booking"
+            fetch(bookingDetailURL,{
+                method : "GET",
+                headers : {
+                    "Authorization": `Bearer ${token}`
+                }}).then((response) => {
+                    return response.json()
+                }).then((result) => {
+                    bookingItemArray = result.data;
+                }).then(() => {
+                    createBookingItem(bookingItemArray) ;
+                })
+        }            
+    </script> 
+    <script>
+        function signOut(){
+            localStorage.removeItem("token")
+            return window.location.replace(IP)                
+        }
+    </script>  
+    <script>
+        function createBookingItem(inputData){
+            let totalPrice = 0;            
+            if(inputData == null){                                                    
+                noneItemThenRemoveElements();
+            }else if(inputData.length == 0){                   
+                noneItemThenRemoveElements();
+            }else{                
                 for(i = 0; i < inputData.length; i++){
                 const main_bookingSection = document.getElementById("main_bookingSection");
                 const main_bookingItem = document.createElement("div");
@@ -228,9 +232,24 @@
                 let newPrice = 0
                 const totalPriceContent = document.getElementById("totalPrice")
                 document.querySelectorAll("#itemPrice").forEach((e)=> {newPrice+=parseInt(e.textContent.match(/\d+/)[0])})
-                totalPriceContent.textContent = newPrice       
+                totalPriceContent.textContent = newPrice
+                if (newPrice == 0){
+                    noneItemThenRemoveElements()
+                }     
                 return        
             })
+        }
+        function noneItemThenRemoveElements(){
+            const messageForNull = document.querySelector(".messageForNull")
+                messageForNull.style.display = "block";
+                const main_inputSection = document.querySelectorAll(".main_inputSection");
+                main_inputSection.forEach((e) => e.remove());
+                const seperateLine = document.querySelectorAll(".seperateLine");
+                seperateLine.forEach((e) => e.remove())
+                const main_confirmSection = document.querySelector(".main_confirmSection");
+                main_confirmSection.remove()
+                const footer = document.querySelector(".footer")
+                footer.style.height = "calc(100vh - 208.6px)"
         }
     </script>
     <div class="footer">

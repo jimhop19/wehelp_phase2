@@ -1,3 +1,6 @@
+body{
+    display: none;
+}
 .navigation{
     width: 1200px;
     margin: 0px auto;
@@ -60,9 +63,9 @@
     @media (max-width:700px){
         width: 400px;        
     }
-    @media(max-width:600px){
+    @media(max-width:500px){
         width: 100%;
-        padding: 0 10px;
+        padding: 0 20px;
         box-sizing: border-box;
     }    
     #main_bookingSection{        
@@ -137,13 +140,16 @@
     .messageForNull{
         padding: 0px 100px 40px;
         display: none;
+        @media (max-width:900px) {
+            padding: 0px 0px 40px;
+        }   
     }
     .main_inputSection{
         padding:45px 100px;
         color: var(--secondary-color-gray-70);
         @media (max-width:900px){
             padding: 45px 0px;
-        }         
+        }              
         btn{
             display: block;
             padding-bottom: 17px;                               
@@ -201,6 +207,7 @@ hr{
     padding: 40px 0 ;
     background-color: var(--secondary-color-gray-50);
     text-align: center;
+    box-sizing: border-box;
     p{
         color: #FFFFFF;
     }

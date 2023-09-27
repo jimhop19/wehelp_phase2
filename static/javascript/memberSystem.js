@@ -90,6 +90,7 @@ function checkSignInStatus(){
     if (token == undefined){
         return false;
     }else{
+        document.body.style.display = "block"
         fetch(signInURL,{
         method : "GET",
         headers : {

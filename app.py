@@ -6,6 +6,7 @@ import re
 import jwt
 key = "secret"
 from datetime import datetime,timezone,timedelta
+from selenium import webdriver
 import mysql.connector
 dbconfg = {
 	"host" : "127.0.0.1",
@@ -28,8 +29,8 @@ def index():
 def attraction(id):
 	return render_template("attraction.html")
 @app.route("/booking")
-def booking():
-	return render_template("booking.html")
+def booking():		
+	return render_template("booking.html")	
 @app.route("/thankyou")
 def thankyou():
 	return render_template("thankyou.html")
