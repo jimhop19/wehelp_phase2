@@ -6,7 +6,6 @@ import re
 import jwt
 key = "secret"
 from datetime import datetime,timezone,timedelta
-from selenium import webdriver
 import mysql.connector
 dbconfg = {
 	"host" : "127.0.0.1",
