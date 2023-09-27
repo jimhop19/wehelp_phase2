@@ -260,6 +260,7 @@
   display: block;
   -o-object-fit: cover;
      object-fit: cover;
+  background-color: var(--secondary-color-gray-20);
 }
 .main .main_content .itemCard .picDivInCard p {
   display: block;
@@ -325,6 +326,9 @@ body {
   right: 10px;
   top: 20px;
 }
+.darkenBackground .memberPage img:hover {
+  cursor: pointer;
+}
 .darkenBackground .memberPage .memberForm {
   padding: 15px;
 }
@@ -351,7 +355,7 @@ body {
   margin-top: 10px;
   padding: 5px;
 }
-.darkenBackground .memberPage .memberForm p d span:hover {
+.darkenBackground .memberPage .memberForm p span:hover {
   cursor: pointer;
 }
 .darkenBackground #signUpForm {

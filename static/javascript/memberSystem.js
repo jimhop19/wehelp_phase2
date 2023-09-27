@@ -7,33 +7,32 @@ signInAndSignUp.addEventListener("click",() => {
     memberPage.style.display = "block";
     const signInEmailInput = document.getElementById("signInEmailInput");
     signInEmailInput.focus();
-})
+});
 //close memberpage
 const closeMemberPage = document.getElementById("closePage");
 closeMemberPage.addEventListener("click",() => {
     memberPage.style.display = "none"
-})
-const memberForm = document.querySelector(".memberForm")
+});
 memberPage.addEventListener("click",(event)=>{       
     if(event.target != memberPage){        
         return;
     }else if(memberPage.style.display == "block"){        
         memberPage.style.display = "none"
     }     
-})
+});
 //autofocus
 const signInPasswordInput = document.getElementById("signInPasswordInput");
 signInPasswordInput.addEventListener("keypress",function(event){
     if (event.key === "Enter"){
         signIn()
     }
-})
+});
 const signUpPasswordInput = document.getElementById("signUpPassword");
 signUpPasswordInput.addEventListener("keypress",function(event){
     if (event.key === "Enter"){
         signUp()
     }
-})
+});
 //check sign in status
 window.onload = checkSignInStatus();    
 function signIn(){
@@ -41,7 +40,7 @@ function signIn(){
     const password = document.getElementById("signInPasswordInput").value
     const signInSuccessMessage = document.getElementById("signInSuccessMessage");
     signInSuccessMessage.style.display = "none"
-    const emailRegex = /^\w+@\w+.+\w+$/;
+    const emailRegex = /^\w+@\w+\.+\w+$/;
     const signInData = {
         "email":email,
         "password":password
@@ -89,8 +88,9 @@ function checkSignInStatus(){
     const signInURL = IP + "api/user/auth"
     let token = localStorage.token
     if (token == undefined){
-        return 
+        return false;
     }else{
+        document.body.style.display = "block"
         fetch(signInURL,{
         method : "GET",
         headers : {
@@ -99,11 +99,11 @@ function checkSignInStatus(){
         }).then((response) => {
             return response.json();
         }).then((result) =>{
-            if (result.data == null){
-                return
-            }else{
-                signInAndSignUp.style.display = "none"
-                signOutButton.style.display = "block"                    
+            if (result.data == null){                
+                return false;
+            }else{                
+                signInAndSignUp.style.display = "none";
+                signOutButton.style.display = "block";                  
             }
         })
     }            
@@ -119,7 +119,7 @@ function signUp(){
         "email":signUpEmail,
         "password":signUpPassword
     }
-    const emailRegex = /^\w+@\w+.+\w+$/;
+    const emailRegex = /^\w+@\w+\.+\w+$/;
     if (signUpName == ""){
         successMessage.textContent = "請輸入姓名";
         successMessage.style.display = "block";   
@@ -171,4 +171,12 @@ function switchToSignIn(){
     signUpForm.style.display = "none";
     const signInEmailInput = document.getElementById("signInEmailInput");
     signInEmailInput.focus();
+}
+function redirectToBooking(){
+    if (checkSignInStatus() == false){
+        memberPage.style.display = "block";              
+        switchToSignIn();
+    }else{
+        return window.location.replace(IP+"booking")
+    }
 }

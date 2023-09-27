@@ -1,0 +1,214 @@
+body{
+    display: none;
+}
+.navigation{
+    width: 1200px;
+    margin: 0px auto;
+    padding: 10px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;        
+    @media(max-width:1300px){
+        width: 800px;
+    }
+    @media(max-width:900px){
+        width: 600px;
+    }
+    @media (max-width:700px){
+        width: 400px;        
+    }
+    @media (max-width:500px) {
+        width: 100%;              
+        padding: 10px 20px;
+        box-sizing: border-box;
+        border-bottom: 0;
+    }
+    .navigation_title h2{
+        white-space: nowrap;
+        color: var(--primary-color-cyan-70);
+        a{
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+    .navigation_bar {
+        display: flex;
+        #signOut{
+            display: none;
+        }  
+        p{
+            margin-left: 10px;
+            &:hover{
+                cursor: pointer;
+            }
+            @media(max-width: 346px){            
+                width: 32px;
+                white-space: nowrap;
+                overflow: hidden;    
+                margin-left: 20px;  
+                line-height: 16px;       
+            }     
+        }        
+    }
+}
+.main{
+    width: 1200px;    
+    margin:0px auto;    
+    @media(max-width:1300px){
+        width: 800px;
+    }
+    @media(max-width:900px){
+        width: 600px;
+    }
+    @media (max-width:700px){
+        width: 400px;        
+    }
+    @media(max-width:500px){
+        width: 100%;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }    
+    #main_bookingSection{        
+        btn{
+            display: block;                    
+            padding: 40px 100px 30px;
+            @media (max-width:900px){
+                padding: 40px 0px 30px;
+            }           
+        }  
+        .main_bookingItem{                          
+            padding: 0px 100px 40px;
+            @media (max-width:900px){
+                padding: 0px 0px 40px;
+                margin-bottom: 30px;
+            }
+            .itemInformation{
+                display: flex;
+                justify-content: start;
+                position: relative;
+                @media (max-width:900px) {
+                    display: block;
+                }
+                .imgSection{                                        
+                    margin-right: 30px;                    
+                    width: 250px;
+                    height: 200px;
+                    overflow: hidden;
+                    @media (max-width:1300px) {
+                        width: 200px;
+                    }
+                    @media (max-width:900px){
+                        width: 100%;
+                        margin-bottom: 35px;
+                    }
+                    img{                                 
+                        min-width: 250px;            
+                        height: 100%;
+                        display: block;
+                        object-fit: cover;                       
+                        @media (max-width:900px){
+                            min-width: 100%;
+                        }
+                    }
+                }
+                .textSection{                                  
+                    padding-right: 100px;
+                    @media (max-width:1300px) {
+                        padding-right: 0px;
+                        width: 25vw;
+                    }
+                    p{
+                        padding-bottom: 4px;
+                        line-height: 28px;                        
+                    }
+                    p:first-child{
+                        padding-bottom: 20px;                        
+                        color: var(--primary-color-cyan-70);
+                    }
+                }
+                .deleteButton{
+                    height: 30px;
+                    position: absolute;
+                    right: 0px;                                      
+                    &:hover{
+                        cursor: pointer;
+                    }
+                }
+            }      
+        }
+    }
+    .messageForNull{
+        padding: 0px 100px 40px;
+        display: none;
+        @media (max-width:900px) {
+            padding: 0px 0px 40px;
+        }   
+    }
+    .main_inputSection{
+        padding:45px 100px;
+        color: var(--secondary-color-gray-70);
+        @media (max-width:900px){
+            padding: 45px 0px;
+        }              
+        btn{
+            display: block;
+            padding-bottom: 17px;                               
+        }
+        input{
+            width: 180px;
+            padding: 10px;
+            margin: 7px 0px;
+            border-radius: 5px;
+            border: 1px solid #E8E8E8;
+            @media (max-width:330px) {
+                width: 140px;
+            }
+        }
+        p{  
+            margin-top: 13px;
+            padding: 5px 0px;            
+        }
+        .noticeMessage{
+            line-height: 20px;
+        }
+    }
+    .main_confirmSection{
+        padding:45px 100px;
+        text-align: right;
+        @media (max-width:900px){
+            padding: 45px 0px;
+        }  
+        p{
+            display: block;
+        }
+        .orderButton{
+            display: flex;
+            text-align: right;
+            justify-content: end;            
+            btn{
+                display: inline-block;                 
+                padding: 10px 20px;
+                margin: 20px 0;
+                border-radius: 5px;
+                background-color: var(--primary-color-cyan-70);
+                color: #FFF;
+                &:hover{
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+hr{
+    margin: 0;
+    border-top: 1px solid #E8E8E8;
+}
+.footer{    
+    padding: 40px 0 ;
+    background-color: var(--secondary-color-gray-50);
+    text-align: center;
+    box-sizing: border-box;
+    p{
+        color: #FFFFFF;
+    }
+}

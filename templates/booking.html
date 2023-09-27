@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taipei Trip</title>
+    <link rel="stylesheet" href="/static/css/booking_all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> 
+    <script >        
+        if (localStorage.token == undefined){
+            window.href.replace(IP)
+        }
+    </script>  
+</head>
+<body>    
+    <div class="navigation">
+        <div class="navigation_title">
+            <h2><a href="" id="navigation_titleHref">台北一日遊</a></h2>            
+        </div>
+        <script>
+            let IP = "http://52.64.119.167:3000/"
+            //add hypertext on webisite title
+            const titlehypertext = document.getElementById("navigation_titleHref")
+            titlehypertext.href = IP
+        </script>    
+        <div class="navigation_bar">
+            <p onclick="window.location.replace(IP)">預定行程</p>            
+            <p id="signOut" onclick="signOut()">登出</p>            
+        </div>              
+    </div>
+    <hr class="navigationSeperateLine">
+    <div class="main">
+        <div id="main_bookingSection">
+            <btn class="bold">您好，<span id="userName"></span>，待預訂的行程如下：</btn>
+        </div>
+        <p class="messageForNull">目前沒有任何待預訂的行程</p>
+        <hr class="seperateLine">
+        <div class="main_inputSection">
+            <btn class="bold">您的聯絡資訊</btn>
+            <table>
+                <tr>
+                    <td>
+                        <label for="contactName">聯絡姓名：</label>
+                    </td>
+                    <td>
+                        <input type="text" name="contactName" id="contactName" autofocus>
+                    </td>                    
+                </tr>
+                <tr>
+                    <td>
+                        <label for="contactEmail">連絡信箱：</label>
+                    </td>
+                    <td>
+                        <input type="text" name="contactEmail" id="contactEmail">
+                    </td>                    
+                </tr>
+                <tr>
+                    <td>
+                        <label for="contactPhone">手機號碼：</label>
+                    </td>
+                    <td>
+                        <input type="text" name="contactPhone" id="contactPhone">
+                    </td>                    
+                </tr>
+            </table>        
+            <p class="noticeMessage bold">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
+        </div>
+        <hr class="seperateLine">
+        <div class="main_inputSection">
+            <btn class="bold">信用卡付款資訊</btn>
+            <table>
+                <tr>
+                    <td>
+                        <label for="creditCardNumber">卡片號碼：</label>
+                    </td>
+                    <td>
+                        <input type="password" name="creditCardNumber" id="creditCardNumber">
+                    </td>                    
+                </tr>
+                <tr>
+                    <td>
+                        <label for="creditCardExpirationDate">過期時間：</label>
+                    </td>
+                    <td>
+                        <input type="text" name="creditCardExpirationDate" id="creditCardExpirationDate">
+                    </td>                    
+                </tr>
+                <tr>
+                    <td>
+                        <label for="creditCardCVCCode">驗證密碼：</label>
+                    </td>
+                    <td>
+                        <input type="text" name="creditCardCVCCode" id="creditCardCVCCode">
+                    </td>                    
+                </tr>
+            </table>                    
+        </div>
+        <hr class="seperateLine">
+        <div class="main_confirmSection">
+            <p class="bold">總價：新台幣 <span id="totalPrice"></span> 元</p>
+            <div class="orderButton">
+                <btn>確認訂購並付款</btn>
+            </div>
+        </div>
+    </div>
+    <script>
+        let token = localStorage.token
+        window.onload = checkSignInStatus()
+        function checkSignInStatus(){
+            const signInURL = IP + "api/user/auth"
+            const signOutButton = document.getElementById("signOut");
+            if (token == undefined){
+                return window.location.replace(IP);
+            }else{
+                document.body.style.display = "block"
+                fetch(signInURL,{
+                method : "GET",
+                headers : {
+                    "Authorization": `Bearer ${token}`
+                }
+                }).then((response) => {
+                    return response.json();
+                }).then((result) =>{
+                    if (result.data == null){                
+                        return window.location.replace(IP);
+                    }else{                                        
+                        signOutButton.style.display = "block";
+                        const userName = document.getElementById("userName");
+                        userName.innerHTML = result.data.name;
+                    }
+                }).then(() => {
+                    getBookingDetail();                        
+                })
+            }            
+        }
+        let bookingItemArray = []
+        function getBookingDetail(){
+            let bookingDetailURL = IP + "api/booking"
+            fetch(bookingDetailURL,{
+                method : "GET",
+                headers : {
+                    "Authorization": `Bearer ${token}`
+                }}).then((response) => {
+                    return response.json()
+                }).then((result) => {
+                    bookingItemArray = result.data;
+                }).then(() => {
+                    createBookingItem(bookingItemArray) ;
+                })
+        }            
+    </script> 
+    <script>
+        function signOut(){
+            localStorage.removeItem("token")
+            return window.location.replace(IP)                
+        }
+    </script>  
+    <script>
+        function createBookingItem(inputData){
+            let totalPrice = 0;            
+            if(inputData == null){                                                    
+                noneItemThenRemoveElements();
+            }else if(inputData.length == 0){                   
+                noneItemThenRemoveElements();
+            }else{                
+                for(i = 0; i < inputData.length; i++){
+                const main_bookingSection = document.getElementById("main_bookingSection");
+                const main_bookingItem = document.createElement("div");
+                main_bookingItem.className = "main_bookingItem";
+                main_bookingItem.id = "main_bookingItem"+ inputData[i].bookingDetailID;
+                const itemInformation = document.createElement("div");
+                itemInformation.className = "itemInformation";
+                const imgSection = document.createElement("div");
+                imgSection.className = "imgSection";
+                const textSection = document.createElement("textSection");
+                textSection.className = "textSection";
+                const deleteButton = document.createElement("img")
+                deleteButton.src = "/static/button/icon_delete.png"
+                deleteButton.className = "deleteButton"
+                deleteButton.id = "bookingDetailID" + inputData[i].bookingDetailID
+                deleteButton.addEventListener("click",(event) => deleteBookingItem(event.target))
+                main_bookingSection.appendChild(main_bookingItem)                
+                main_bookingItem.appendChild(itemInformation)
+                itemInformation.appendChild(imgSection)
+                itemInformation.appendChild(textSection)
+                itemInformation.appendChild(deleteButton)
+                const itemImg = document.createElement("img")
+                itemImg.src = inputData[i].attraction.image
+                const itemTitle = document.createElement("p");
+                itemTitle.className = "bold";
+                itemTitle.innerHTML = "台北一日遊："+ inputData[i].attraction.name;
+                const itemDate = document.createElement("p");                
+                itemDate.innerHTML = "<span class = 'bold'>日期：</span>"+ inputData[i].date;
+                const itemTime = document.createElement("p"); 
+                let transferTimeToChinese = ""               
+                if (inputData[i].time == "afternoon"){
+                    transferTimeToChinese = "下午1點到4點"
+                }else{
+                    transferTimeToChinese = "早上9點到12點"
+                }
+                itemTime.innerHTML = "<span class = 'bold'>時間：</span>"+ transferTimeToChinese
+                const itemPrice = document.createElement("p");                
+                itemPrice.innerHTML = "<span class = 'bold'>費用：</span>"+ inputData[i].price;
+                itemPrice.id = "itemPrice"
+                totalPrice += inputData[i].price                
+                const itemAddress = document.createElement("p");                
+                itemAddress.innerHTML = "<span class = 'bold'>地點：</span>"+ inputData[i].attraction.address;
+                imgSection.appendChild(itemImg)
+                textSection.appendChild(itemTitle);
+                textSection.appendChild(itemDate);
+                textSection.appendChild(itemTime);
+                textSection.appendChild(itemPrice);
+                textSection.appendChild(itemAddress);
+            }            
+            const totalPriceContent = document.getElementById("totalPrice")
+            totalPriceContent.textContent = totalPrice
+            }            
+        }
+        function deleteBookingItem(input){            
+            const thisElementID = parseInt(input.id.match(/\d+/)[0])            
+            const deleteURL = IP + "api/booking"
+            fetch(deleteURL,{
+                method:"DELETE",
+                headers : {
+                "Authorization": `Bearer ${token}`
+                },
+                body:thisElementID
+            }).then((response) => {
+                return response.json();
+            }).then((result) => {
+                document.querySelector("#main_bookingItem"+thisElementID).remove()
+                let newPrice = 0
+                const totalPriceContent = document.getElementById("totalPrice")
+                document.querySelectorAll("#itemPrice").forEach((e)=> {newPrice+=parseInt(e.textContent.match(/\d+/)[0])})
+                totalPriceContent.textContent = newPrice
+                if (newPrice == 0){
+                    noneItemThenRemoveElements()
+                }     
+                return        
+            })
+        }
+        function noneItemThenRemoveElements(){
+            const messageForNull = document.querySelector(".messageForNull")
+                messageForNull.style.display = "block";
+                const main_inputSection = document.querySelectorAll(".main_inputSection");
+                main_inputSection.forEach((e) => e.remove());
+                const seperateLine = document.querySelectorAll(".seperateLine");
+                seperateLine.forEach((e) => e.remove())
+                const main_confirmSection = document.querySelector(".main_confirmSection");
+                main_confirmSection.remove()
+                const footer = document.querySelector(".footer")
+                footer.style.height = "calc(100vh - 208.6px)"
+        }
+    </script>
+    <div class="footer">
+        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>    
+</body>

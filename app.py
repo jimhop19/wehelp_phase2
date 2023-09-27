@@ -3,6 +3,9 @@ app=Flask(__name__)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
 import re
+import jwt
+key = "secret"
+from datetime import datetime,timezone,timedelta
 import mysql.connector
 dbconfg = {
 	"host" : "127.0.0.1",
@@ -13,7 +16,7 @@ dbconfg = {
 }
 mydb = mysql.connector.pooling.MySQLConnectionPool(
 	pool_name="attraction",
-	pool_size= 10,		
+	pool_size= 32,		
 	**dbconfg
 )
 
@@ -25,8 +28,8 @@ def index():
 def attraction(id):
 	return render_template("attraction.html")
 @app.route("/booking")
-def booking():
-	return render_template("booking.html")
+def booking():		
+	return render_template("booking.html")	
 @app.route("/thankyou")
 def thankyou():
 	return render_template("thankyou.html")
@@ -38,7 +41,7 @@ def signUp():
 	email = signUpData["email"]
 	password = signUpData["password"]
 	signUpRegex = "^\w+$"
-	emailRegex = "^\w+@\w+.\w+$"
+	emailRegex = "^\w+@\w+\.\w+$"
 	mydbConnection = mydb.get_connection()
 	cursor = mydbConnection.cursor()
 	cursor.execute("SELECT email FROM member WHERE email = %(email)s",{"email":email})
@@ -56,22 +59,14 @@ def signUp():
 		mydbConnection.close()		
 		return {"ok":True}	
 @app.route("/api/user/auth",methods=["GET","PUT"])
-def signIn():
-	import jwt
-	key = "secret"
-	from datetime import datetime,timezone,timedelta
+def signIn():	
 	#check sign in status
 	if request.method == "GET":		
 		try:				
 			string = request.headers["Authorization"]
-			token = string[7:]			
-			jwt.decode(token, key, algorithms="HS256")
-			mydbConnection = mydb.get_connection()
-			cursor = mydbConnection.cursor()
-			cursor.execute("SELECT * FROM member WHERE token = %(token)s",{"token":token})
-			data = cursor.fetchall()
-			mydbConnection.close()			
-			return {"data":{"id":data[0][0],"name":data[0][1],"email":data[0][2]}}
+			token = string[7:]
+			dataFromToken = jwt.decode(token, key, algorithms="HS256")			
+			return{"data":{"id":dataFromToken["id"],"name":dataFromToken["name"],"email":dataFromToken["email"]}}
 		except jwt.ExpiredSignatureError:
 			return {"data" : None}
 	#signin		
@@ -80,18 +75,18 @@ def signIn():
 		email = signInData["email"]		
 		password = signInData["password"]
 		signUpRegex = "^\w+$"
-		emailRegex = "^\w+@\w+.\w+$"
+		emailRegex = "^\w+@\w+\.\w+$"
 		if re.search(emailRegex,email) == None or re.search(signUpRegex,password) == None:
 			return {"error":True,"message":"帳號或密碼格式錯誤"}
 		mydbConnection = mydb.get_connection()
 		cursor = mydbConnection.cursor()
-		cursor.execute("SELECT password,token FROM member WHERE email = %(email)s",{"email":email})
+		cursor.execute("SELECT password,id,name,email FROM member WHERE email = %(email)s",{"email":email})
 		checkResult = cursor.fetchall()		
 		
 		if checkResult != []:
-			passwordFromDatabase = checkResult[0][0]			
-			if password == passwordFromDatabase:
-				jwt_payload ={"exp": datetime.now(tz=timezone.utc) + timedelta(days=7)}
+			passwordFromDatabase = checkResult[0][0]					
+			if password == passwordFromDatabase:				
+				jwt_payload ={"exp": datetime.now(tz=timezone.utc) + timedelta(days=7),"id":checkResult[0][1],"name":checkResult[0][2],"email":checkResult[0][3]}
 				encodedToken = jwt.encode(jwt_payload, key, algorithm="HS256")
 				cursor.execute("UPDATE member SET token = %(token)s WHERE email = %(email)s",{"token":encodedToken,"email":email})
 				mydbConnection.commit()
@@ -139,7 +134,6 @@ def attractionsList():
 
 	return json.dumps(result,ensure_ascii = False)
 	
-
 def createAttractionData(source):
 	data = {}
 	data["id"] = source[0]
@@ -198,5 +192,83 @@ def mrts():
 	result = {}
 	result["data"] = data
 	return json.dumps(result,ensure_ascii = False)
+
+@app.route("/api/booking",methods=["GET","POST","DELETE"])
+def bookingSystem():	
+	try:
+		string = request.headers["Authorization"]
+		token = string[7:]
+		dataFromToken = jwt.decode(token, key, algorithms="HS256")
+		memberID = dataFromToken["id"]
+		if request.method == "POST":
+			requestData = json.loads(request.data)			
+			mydbConnection = mydb.get_connection()
+			cursor = mydbConnection.cursor()
+			cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 0",{"bookingID":memberID})	
+			unpaidBookingID = cursor.fetchall()			
+			if unpaidBookingID == []:
+				cursor.execute("INSERT INTO booking (member_id,payment_status) Value (%s,%s)",(memberID,0))
+				mydbConnection.commit()
+				cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 0",{"bookingID":memberID})	
+				newBookingID = cursor.fetchall()[0][0]
+				bookingID = newBookingID
+			else:
+				bookingID = unpaidBookingID[0][0]		
+			requestAttractionId = requestData["attractionId"]
+			requestDate = requestData["date"]
+			requestTime = requestData["time"]
+			requestPrice = requestData["price"]				
+			cursor.execute("INSERT INTO booking_detail (booking_id,attraction_id,date,time,price) VALUE (%s,%s,%s,%s,%s)",(bookingID,requestAttractionId,requestDate,requestTime,requestPrice))
+			mydbConnection.commit()
+			mydbConnection.close()
+			return {"ok":True}
+		if request.method == "GET":
+			mydbConnection = mydb.get_connection()
+			cursor = mydbConnection.cursor()			
+			cursor.execute("SELECT id FROM booking WHERE member_id = %(memberID)s AND payment_status = 0",{"memberID":memberID})
+			unpaidBookingID = cursor.fetchall()			
+			if unpaidBookingID == []:
+				mydbConnection.close()
+				return{"data":None}
+			else:
+				bookingID = unpaidBookingID[0][0]
+				cursor.execute("SELECT attraction_id,date,time,price,id FROM booking_detail WHERE booking_id = %(bookingID)s",{"bookingID":bookingID})
+				dataFromDatabase = cursor.fetchall()				
+				data = []
+				if dataFromDatabase == []:
+					mydbConnection.close()
+					return{"data":data}
+				else:
+					for x in dataFromDatabase:
+						item = {}
+						attractionID = x[0]
+						cursor.execute("SELECT name,address,images FROM attraction WHERE id = %(attractionID)s",{"attractionID":attractionID})
+						attractionData = cursor.fetchall()
+						imageRegex = "http.*?\.jpg"
+						item["attraction"] = {"id":attractionID,"name":attractionData[0][0],"address":attractionData[0][1],"image":re.findall(imageRegex,attractionData[0][2],re.IGNORECASE)[0]}
+						item["date"] = x[1].strftime("%Y-%m-%d")
+						item["time"] = x[2]
+						item["price"] = x[3]
+						item["bookingDetailID"] = x[4]
+						data.append(item)				
+					mydbConnection.close()			
+					return{"data":data}
+		if request.method == "DELETE":
+			try:
+				bookingDetailID = request.data				
+				mydbConnection = mydb.get_connection()
+				cursor = mydbConnection.cursor()
+				cursor.execute("DELETE FROM booking_detail WHERE id = %(bookingDetailID)s",{"bookingDetailID":bookingDetailID})
+				mydbConnection.commit()
+				mydbConnection.close()
+				return {"ok":True}
+			except:
+				return {"error":True,"message":"Internal Error"}
+						
+	except jwt.ExpiredSignatureError:
+		return {"error":True,"message":"請先登入"}
+	except Exception:
+		return {"error":True,"message":"Internal error"}
+	
 
 app.run(host="0.0.0.0", port=3000)
