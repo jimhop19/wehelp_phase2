@@ -87,6 +87,7 @@ function signOut(){
 function checkSignInStatus(){
     const signInURL = IP + "api/user/auth"
     let token = localStorage.token
+    let memberData = {}
     if (token == undefined){
         return false;
     }else{
@@ -101,7 +102,8 @@ function checkSignInStatus(){
         }).then((result) =>{
             if (result.data == null){                
                 return false;
-            }else{                
+            }else{        
+                memberData = result;
                 signInAndSignUp.style.display = "none";
                 signOutButton.style.display = "block";                  
             }

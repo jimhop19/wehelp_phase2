@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <title>Taipei Trip</title>
+    <link rel="stylesheet" href="/static/css/thankyou_all.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> 
+    <script >    
+        if (localStorage.token == undefined){
+            window.href.replace(IP)
+        }
+    </script>    
+</head>
+<body>
+    <div class="navigation">
+        <div class="navigation_title">
+            <h2><a href="" id="navigation_titleHref">台北一日遊</a></h2>            
+        </div>
+        <script>
+            let IP = "http://52.64.119.167:3000/"
+            //add hypertext on webisite title
+            const titlehypertext = document.getElementById("navigation_titleHref")
+            titlehypertext.href = IP
+        </script>    
+        <div class="navigation_bar">
+            <p onclick="window.location.replace(IP)">預定行程</p>            
+            <p id="signOut" onclick="signOut()">登出</p>            
+        </div>              
+    </div>
+    <hr class="navigationSeperateLine">
+    <div class="main">
+        <btn class="bold">您好，<span id="userName"></span>，您的訂單號碼：</btn>
+        <div class="IdSection">
+            <p class="messageForOrderID">ID</p>
+            <p class="copyButton">複製</p>
+            <p class="copySuccess">複製成功</p>
+        </div>
+        <div class="orderInformation">
+            <p>總金額：<span id="totalPrice"></span></p>
+            <p>付款狀態：<span id="paymentStatus"></span></p>            
+            <p>訂單內容：</p>
+        </div>
+        <div id="main_orderSection">
+            
+        </div>        
+    </div>
+    <div class="footer">
+        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>   
+    <script>
+        function signOut(){
+            localStorage.removeItem("token")
+            window.location.replace(IP)
+        }
+    </script>
+    <script>
+        let token = localStorage.token;
+        let memberData = {}
+        const signInURL = IP + "api/user/auth"  
+        fetch(signInURL,{
+            method : "GET",
+            headers : {
+                "Authorization": `Bearer ${token}`
+            }
+        }).then((response) => {
+            return response.json();
+        }).then((result) => {
+            memberData = result.data
+        }).then(() => {
+            initialize()
+        })
+        function initialize(){
+            const userName = document.getElementById("userName");
+            userName.textContent = memberData.name;
+            let urlParams = new URLSearchParams(window.location.search);
+            const messageForOrderID = document.querySelector(".messageForOrderID");
+            messageForOrderID.textContent = urlParams.get("number")
+            const copyButton = document.querySelector(".copyButton")
+            const copySuccess = document.querySelector(".copySuccess")
+            copyButton.addEventListener("click",() => {
+                navigator.clipboard.writeText(messageForOrderID.innerHTML);
+                copySuccess.style.opacity = "100";                
+            })
+            getOrderDetail(urlParams.get("number"))
+        }
+        function getOrderDetail(number){
+            const orderDetailURL = IP + "api/order/" + number
+            fetch(orderDetailURL,{
+            method : "GET",
+            headers : {
+                "Authorization": `Bearer ${token}`
+            }}).then((response) => {
+            return response.json();
+            }).then((result) => {
+                console.log(result)
+                if (result.error == true){
+                    const messageForOrderID = document.querySelector(".messageForOrderID");
+                    messageForOrderID.textContent = "查無此訂單號碼"
+                }else{
+                    priceAndPaymentStatus(result.data)
+                    createBookingItem(result.data.trip)
+                }
+            })
+        }
+        function priceAndPaymentStatus(inputData){
+            const totalPrice = document.getElementById("totalPrice");
+            const paymentStatus = document.getElementById("paymentStatus");
+            totalPrice.textContent = "新台幣" + inputData.price + "元";
+            if (inputData.status === 0){
+                paymentStatus.textContent = "已付款"
+            }else{
+                paymentStatus.textContent = "尚未付款"
+            }
+            
+        }
+        function createBookingItem(inputData){            
+            for(i = 0; i < inputData.length; i++){
+                const main_orderSection = document.getElementById("main_orderSection");
+                const main_bookingItem = document.createElement("div");
+                main_bookingItem.className = "main_bookingItem";                
+                const itemInformation = document.createElement("div");
+                itemInformation.className = "itemInformation";
+                const imgSection = document.createElement("div");
+                imgSection.className = "imgSection";
+                const textSection = document.createElement("textSection");
+                textSection.className = "textSection";                
+                main_orderSection.appendChild(main_bookingItem)                
+                main_bookingItem.appendChild(itemInformation)
+                itemInformation.appendChild(imgSection)
+                itemInformation.appendChild(textSection)                
+                const itemImg = document.createElement("img")
+                itemImg.src = inputData[i].attraction.image
+                const itemTitle = document.createElement("p");
+                itemTitle.className = "bold";
+                itemTitle.innerHTML = "台北一日遊："+ inputData[i].attraction.name;
+                const itemDate = document.createElement("p");                
+                itemDate.innerHTML = "<span class = 'bold'>日期：</span>"+ inputData[i].date;
+                const itemTime = document.createElement("p"); 
+                let transferTimeToChinese = ""               
+                if (inputData[i].time == "afternoon"){
+                    transferTimeToChinese = "下午1點到4點"
+                }else{
+                    transferTimeToChinese = "早上9點到12點"
+                }
+                itemTime.innerHTML = "<span class = 'bold'>時間：</span>"+ transferTimeToChinese
+                const itemAddress = document.createElement("p");                
+                itemAddress.innerHTML = "<span class = 'bold'>地點：</span>"+ inputData[i].attraction.address;
+                imgSection.appendChild(itemImg)
+                textSection.appendChild(itemTitle);
+                textSection.appendChild(itemDate);
+                textSection.appendChild(itemTime);                
+                textSection.appendChild(itemAddress);
+            }                        
+        }
+    </script>
+</body>
