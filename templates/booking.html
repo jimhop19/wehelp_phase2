@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <title>Taipei Trip</title>
     <link rel="stylesheet" href="/static/css/booking_all.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" /> 
@@ -10,7 +10,7 @@
         if (localStorage.token == undefined){
             window.href.replace(IP)
         }
-    </script>  
+    </script>    
 </head>
 <body>    
     <div class="navigation">
@@ -43,7 +43,7 @@
                         <label for="contactName">聯絡姓名：</label>
                     </td>
                     <td>
-                        <input type="text" name="contactName" id="contactName" autofocus>
+                        <input type="text" name="contactName" id="contactName" >
                     </td>                    
                 </tr>
                 <tr>
@@ -59,7 +59,7 @@
                         <label for="contactPhone">手機號碼：</label>
                     </td>
                     <td>
-                        <input type="text" name="contactPhone" id="contactPhone">
+                        <input type="text" name="contactPhone" id="contactPhone" autofocus>
                     </td>                    
                 </tr>
             </table>        
@@ -74,7 +74,7 @@
                         <label for="creditCardNumber">卡片號碼：</label>
                     </td>
                     <td>
-                        <input type="password" name="creditCardNumber" id="creditCardNumber">
+                        <div class="tpfield" name="creditCardNumber" id="creditCardNumber"></div>
                     </td>                    
                 </tr>
                 <tr>
@@ -82,33 +82,53 @@
                         <label for="creditCardExpirationDate">過期時間：</label>
                     </td>
                     <td>
-                        <input type="text" name="creditCardExpirationDate" id="creditCardExpirationDate">
+                        <div class="tpfield" name="creditCardExpirationDate" id="creditCardExpirationDate"></div>
                     </td>                    
                 </tr>
                 <tr>
                     <td>
-                        <label for="creditCardCVCCode">驗證密碼：</label>
+                        <label for="creditCardCCVCode">驗證密碼：</label>
                     </td>
                     <td>
-                        <input type="text" name="creditCardCVCCode" id="creditCardCVCCode">
-                    </td>                    
+                        <div class="tpfield" name="creditCardCCVCode" id="creditCardCCVCode"></div>
+                    </td>                                   
                 </tr>
-            </table>                    
+            </table>                     
         </div>
         <hr class="seperateLine">
         <div class="main_confirmSection">
             <p class="bold">總價：新台幣 <span id="totalPrice"></span> 元</p>
             <div class="orderButton">
-                <btn>確認訂購並付款</btn>
+                <btn onclick="onSubmit()">確認訂購並付款</btn>
             </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
+    </div>
+    <div class="darkenBackground"> 
+        <div class="errorPage">
+            <div class="decorationBar"></div>
+            <img src="/static/button/icon_close.png" alt="close" id="closePage">
+            <div class="errorAlert" id = "errorAlert">
+                <h3>付款失敗</h3>
+                <p class="errorMessage" id="errorMessage"></p>
+                <btn id ="confirmButton" onclick="confirm()">關閉</btn>                
+            </div>            
+        </div>               
+    </div>
+    <div class="loadingCover">
+        <div class="loader"></div>
+        <div class="loadingtext">
+            <p>連線付款中</p>
         </div>
     </div>
     <script>
         let token = localStorage.token
-        window.onload = checkSignInStatus()
-        function checkSignInStatus(){
-            const signInURL = IP + "api/user/auth"
-            const signOutButton = document.getElementById("signOut");
+        let memberData = {}
+        window.onload = checkSignInStatus(getBookingDetail)
+        function checkSignInStatus(callback){
+            const signInURL = IP + "api/user/auth"            
             if (token == undefined){
                 return window.location.replace(IP);
             }else{
@@ -123,18 +143,31 @@
                 }).then((result) =>{
                     if (result.data == null){                
                         return window.location.replace(IP);
-                    }else{                                        
-                        signOutButton.style.display = "block";
-                        const userName = document.getElementById("userName");
-                        userName.innerHTML = result.data.name;
+                    }else{
+                        memberData = result
+                        verifiedSignIn(result)
+                        autoFillIn()
                     }
-                }).then(() => {
-                    getBookingDetail();                        
+                }).then((result) => {
+                    callback();                    
+                    return
                 })
             }            
         }
+        function verifiedSignIn(result){
+            const signOutButton = document.getElementById("signOut");
+            signOutButton.style.display = "block";
+            const userName = document.getElementById("userName");
+            userName.innerHTML = result.data.name;
+        }
+        function autoFillIn(){
+            const contactName = document.getElementById("contactName");
+            const contactEmail = document.getElementById("contactEmail");
+            contactName.value = memberData.data.name
+            contactEmail.value = memberData.data.email
+        }
         let bookingItemArray = []
-        function getBookingDetail(){
+        function getBookingDetail(){           
             let bookingDetailURL = IP + "api/booking"
             fetch(bookingDetailURL,{
                 method : "GET",
@@ -145,7 +178,8 @@
                 }).then((result) => {
                     bookingItemArray = result.data;
                 }).then(() => {
-                    createBookingItem(bookingItemArray) ;
+                    createBookingItem(bookingItemArray);
+                    return bookingItemArray                    
                 })
         }            
     </script> 
@@ -155,7 +189,7 @@
             return window.location.replace(IP)                
         }
     </script>  
-    <script>
+    <script>                
         function createBookingItem(inputData){
             let totalPrice = 0;            
             if(inputData == null){                                                    
@@ -228,14 +262,21 @@
             }).then((response) => {
                 return response.json();
             }).then((result) => {
-                document.querySelector("#main_bookingItem"+thisElementID).remove()
+                bookingItemArray = bookingItemArray.filter(filterByID);
+                function filterByID(item) {
+                    if(item.bookingDetailID === thisElementID){
+                        return true
+                    }
+                    return false
+                  }
+                document.querySelector("#main_bookingItem"+thisElementID).remove();
                 let newPrice = 0
                 const totalPriceContent = document.getElementById("totalPrice")
                 document.querySelectorAll("#itemPrice").forEach((e)=> {newPrice+=parseInt(e.textContent.match(/\d+/)[0])})
                 totalPriceContent.textContent = newPrice
                 if (newPrice == 0){
                     noneItemThenRemoveElements()
-                }     
+                }                
                 return        
             })
         }
@@ -252,7 +293,124 @@
                 footer.style.height = "calc(100vh - 208.6px)"
         }
     </script>
-    <div class="footer">
-        <p class="bold">COPYRIGHT © 2023 台北一日遊</p>
-    </div>    
+    <script>
+         const darkenBackground = document.querySelector(".darkenBackground")
+        const closePage = document.getElementById("closePage")
+        closePage.addEventListener("click",() => {
+            darkenBackground.style.display = "none"
+        })
+        function confirm(){
+            darkenBackground.style.display = "none"
+        }
+    </script>
+   <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.17.0"></script>
+   <script>
+        APP_ID = 137043
+        TPDirect.setupSDK(APP_ID, "app_hXNpgvGKkAEuWKLOeeQqqhbFXuZQ8Nzx2sukJoac9dnLW5MIbdIUwVLB1Lph", 'sandbox')
+        
+        let fields = {
+           number: {
+               // css selector
+               element: '#creditCardNumber',
+               placeholder: '**** **** **** ****'
+           },
+           expirationDate: {
+               // DOM object
+               element: document.getElementById('creditCardExpirationDate'),
+               placeholder: 'MM / YY'
+           },
+           ccv: {
+               element: '#creditCardCCVCode',
+               placeholder: "CCV"              
+           }              
+        }     
+        TPDirect.card.setup({
+            fields:fields})
+        
+        function onSubmit() {
+            const contactName = document.getElementById("contactName");
+            const contactEmail = document.getElementById("contactEmail");
+            const contactPhone = document.getElementById("contactPhone");
+            const emailRegex = /^\w+@\w+\.+\w+$/;
+            const errorMessage  = document.getElementById("errorMessage");
+            if (contactName.value == ""){
+                darkenBackground.style.display = "block";
+                errorMessage.textContent = "請填寫聯絡姓名";
+                return
+            }else if (contactEmail.value == ""){
+                darkenBackground.style.display = "block";
+                errorMessage.textContent = "請填寫聯絡Email";
+                return
+            }else if (contactEmail.value.search(emailRegex) == -1){
+                darkenBackground.style.display = "block";
+                errorMessage.textContent = "Email格式錯誤";
+                return
+            }else if (contactPhone.value == ""){
+                darkenBackground.style.display = "block";
+                errorMessage.textContent = "請填寫手機號碼";
+                return
+            }
+            const tappayStatus = TPDirect.card.getTappayFieldsStatus()
+            if (tappayStatus.canGetPrime === false) {
+                darkenBackground.style.display = "block";
+                console.log(tappayStatus)
+                if (tappayStatus.status.number != 0){
+                    errorMessage.textContent = "信用卡號碼" + statusManage(tappayStatus.status.number);
+                }else if (tappayStatus.status.expiry != 0){
+                    errorMessage.textContent = "過期日期" + statusManage(tappayStatus.status.expiry);                    
+                }else if (tappayStatus.status.ccv != 0){
+                    errorMessage.textContent = "驗證密碼" + statusManage(tappayStatus.status.ccv);                    
+                }                
+                return
+            }
+            function statusManage(input){
+                if (input === 1){
+                    return "尚未填寫"
+                }else {
+                    return "錯誤"
+                }
+            }
+
+            // Get prime
+            TPDirect.card.getPrime((result) => {
+                if (result.status !== 0) {                    
+                    return
+                }
+                const loadingCover = document.querySelector(".loadingCover");
+                loadingCover.style.display = "block";
+                let token = localStorage.token
+                let orderURL =IP+"api/orders";
+                let trip = []
+                bookingItemArray.forEach((item) => {
+                    delete item.bookingDetailID;
+                    delete item.price;
+                    trip.push(item)        
+                })
+                const contactName = document.getElementById("contactName").value;
+                const contactEmail = document.getElementById("contactEmail").value;
+                const contactPhone = document.getElementById("contactPhone").value;
+                let contact = {"name":contactName,"email":contactEmail,"phone":contactPhone}
+                let orderData = {"prime":result.card.prime,"order":{"price":totalPrice.textContent,"trip":trip,"contact":contact}}
+                fetch(orderURL,{
+                    method : "POST",
+                    headers:{
+                        "Authorization":`Bearer ${token}`
+                    },
+                    body:JSON.stringify(orderData)
+                }).then((response) => {                    
+                    return response.json()
+                }).then((result) => {
+                    let paymentStatus = result.data.payment.status
+                    
+                    if (paymentStatus === 0){
+                        window.location.replace(IP+`thankyou?number=${result.data.number}`)
+                    }else{
+                        darkenBackground.style.display = "block";
+                        const errorMessage  = document.getElementById("errorMessage")
+                        errorMessage.textContent = "付款發生錯誤"
+                    }     
+                })              
+            })      
+        }
+   </script>   
 </body>

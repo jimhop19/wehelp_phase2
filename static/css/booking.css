@@ -1,5 +1,10 @@
 body {
   display: none;
+  position: relative;
+}
+
+label {
+  font-family: "Noto Sans", sans-serif;
 }
 
 .navigation {
@@ -212,6 +217,27 @@ body {
 .main .main_inputSection .noticeMessage {
   line-height: 20px;
 }
+.main .main_inputSection .tpfield {
+  width: 180px;
+  padding: 10px;
+  margin: 7px 0px;
+  border-radius: 5px;
+  border: 1px solid #E8E8E8;
+  display: inline-block;
+  height: 16px;
+  vertical-align: middle;
+}
+.main .main_inputSection .tpfield :focus::-moz-placeholder {
+  color: transparent;
+}
+.main .main_inputSection .tpfield :focus::placeholder {
+  color: transparent;
+}
+@media (max-width: 330px) {
+  .main .main_inputSection .tpfield {
+    width: 140px;
+  }
+}
 .main .main_confirmSection {
   padding: 45px 100px;
   text-align: right;
@@ -254,4 +280,96 @@ hr {
 }
 .footer p {
   color: #FFFFFF;
+}
+
+.darkenBackground {
+  display: none;
+  width: 100vw;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 3;
+  position: absolute;
+  top: 0;
+}
+.darkenBackground .errorPage {
+  width: 340px;
+  margin: 80px auto;
+  border-radius: 6px;
+  background: #FFF;
+  box-shadow: 0px 4px 60px 0px #AAA;
+  text-align: center;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-170px);
+}
+.darkenBackground .errorPage .decorationBar {
+  height: 10px;
+  background: var(--additional-color-dark-cyan-gradient-0-deg, linear-gradient(270deg, #378 0%, #6AB 100%));
+}
+.darkenBackground .errorPage img {
+  width: 16px;
+  position: absolute;
+  padding: 7px;
+  right: 10px;
+  top: 20px;
+}
+.darkenBackground .errorPage img:hover {
+  cursor: pointer;
+}
+.darkenBackground .errorPage .errorAlert {
+  padding: 15px;
+}
+.darkenBackground .errorPage btn {
+  display: block;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: #FFF;
+  background-color: var(--primary-color-cyan-70);
+}
+.darkenBackground .errorPage btn:hover {
+  cursor: pointer;
+}
+.darkenBackground .errorPage p {
+  margin: 15px 0px;
+  padding: 5px;
+}
+
+.loadingCover {
+  display: none;
+  width: 100vw;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  position: absolute;
+  top: 0;
+}
+.loadingCover .loader {
+  position: absolute;
+  top: 50%;
+  left: 45%;
+  border: 14px solid var(--secondary-color-gray-20);
+  border-top: 14px solid var(--primary-color-cyan-70);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+.loadingCover .loadingtext {
+  position: absolute;
+  top: 50%;
+  left: 45%;
+  transform: translate(35px, 180px);
+}
+.loadingCover .loadingtext p {
+  color: var(--secondary-color-gray-20);
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }/*# sourceMappingURL=booking.css.map */

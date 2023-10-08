@@ -56,16 +56,17 @@
                         <span id="bookingPrice"></span>
                         <script>
                             const bookingDate = document.getElementById("bookingDate")
-                            const today = new Date()                            
-                            let zeroInFrontOfMonth = ""
-                            if (today.getMonth()+1 > 9){
-                                zeroInFrontOfMonth = "-";
-                            }else{
-                                zeroInFrontOfMonth = "-0";
-                            }                            
-                            const format = today.getFullYear().toString() + zeroInFrontOfMonth + (today.getMonth()+1).toString() + "-" + today.getDate().toString()
+                            const today = new Date()
+                            const format = today.getFullYear().toString() + formatDate(today.getMonth()+1) + formatDate(today.getDay()+1)
                             bookingDate.value = format
                             bookingDate.min = format
+                            function formatDate(input){
+                                if (input < 10 ){
+                                    return `-0${input}`
+                                }else{
+                                    return `-${input}`
+                                }
+                            }
                             checkAndRevealPrice()
                             function checkAndRevealPrice(){
                                 const bookingTimeAM = document.getElementById("bookingTimeAM");

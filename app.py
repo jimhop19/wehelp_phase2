@@ -6,7 +6,13 @@ import re
 import jwt
 key = "secret"
 from datetime import datetime,timezone,timedelta
+import requests
 import mysql.connector
+import os
+from dotenv import load_dotenv
+load_dotenv()
+partner_key = os.getenv("partner_key")
+
 dbconfg = {
 	"host" : "127.0.0.1",
 	"username" : "root",
@@ -204,12 +210,12 @@ def bookingSystem():
 			requestData = json.loads(request.data)			
 			mydbConnection = mydb.get_connection()
 			cursor = mydbConnection.cursor()
-			cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 0",{"bookingID":memberID})	
+			cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 1",{"bookingID":memberID})	
 			unpaidBookingID = cursor.fetchall()			
 			if unpaidBookingID == []:
-				cursor.execute("INSERT INTO booking (member_id,payment_status) Value (%s,%s)",(memberID,0))
+				cursor.execute("INSERT INTO booking (member_id,payment_status) Value (%s,%s)",(memberID,1))
 				mydbConnection.commit()
-				cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 0",{"bookingID":memberID})	
+				cursor.execute("SELECT id FROM booking WHERE member_id = %(bookingID)s AND payment_status = 1",{"bookingID":memberID})	
 				newBookingID = cursor.fetchall()[0][0]
 				bookingID = newBookingID
 			else:
@@ -225,7 +231,7 @@ def bookingSystem():
 		if request.method == "GET":
 			mydbConnection = mydb.get_connection()
 			cursor = mydbConnection.cursor()			
-			cursor.execute("SELECT id FROM booking WHERE member_id = %(memberID)s AND payment_status = 0",{"memberID":memberID})
+			cursor.execute("SELECT id FROM booking WHERE member_id = %(memberID)s AND payment_status = 1",{"memberID":memberID})
 			unpaidBookingID = cursor.fetchall()			
 			if unpaidBookingID == []:
 				mydbConnection.close()
@@ -269,6 +275,116 @@ def bookingSystem():
 		return {"error":True,"message":"請先登入"}
 	except Exception:
 		return {"error":True,"message":"Internal error"}
-	
+@app.route("/api/orders",methods=["POST"])
+def Order():
+	try:
+		authorizationResult = authorization()		
+		if authorizationResult["error"] == True:
+			return ("/")
+	except:
+		data_from_frontend = json.loads(request.data)	
+		prime = data_from_frontend["prime"]
+		price = data_from_frontend["order"]["price"]
+		contact = data_from_frontend["order"]["contact"]
+		name = contact["name"]
+		email = contact["email"]
+		phone_number = contact["phone"]		
+		url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+		headers = {
+			"Content-Type": "application/json",
+			"x-api-key": partner_key
+		}
+		data = {
+			"prime": prime,
+			"partner_key": partner_key,
+			"merchant_id": "jimhop_NCCC",
+			"details": "TapPay Test",
+			"amount": price,
+			"cardholder": {
+				"phone_number": phone_number,
+				"name": name,
+				"email": email		
+			}
+		}
+		result_from_tappay = requests.post(url,headers=headers,json=data, timeout=30)		
+		result = json.loads(f"{result_from_tappay.text}")
+		def format_time(input):
+			if input < 10 :
+				return "0"+f"{input}"
+			else:
+				return input
+		def payment_status(status_number):
+			current_datetime = datetime.now(tz=timezone(timedelta(hours=8)))
+			order_number = f"{current_datetime.year}"+f"{format_time(current_datetime.month)}"+f"{format_time(current_datetime.day)}"+f"{format_time(current_datetime.hour)}"+f"{format_time(current_datetime.minute)}"+f"{format_time(current_datetime.second)}"
+			mydbconnenction = mydb.get_connection()
+			cursor = mydbconnenction.cursor()
+			cursor.execute("UPDATE booking SET payment_status = %(status_number)s, order_number = %(order_number)s, contact_name = %(contact_name)s, contact_email = %(contact_email)s, contact_phone = %(contact_phone)s,total_price = %(total_price)s WHERE member_id = %(memberID)s AND payment_status = 1;",{"status_number":status_number,"order_number":order_number,"contact_name":name,"contact_email":email,"contact_phone":phone_number,"memberID":authorizationResult["id"],"total_price":price})
+			mydbconnenction.commit()
+			mydbconnenction.close()
+			dataBackToFrontEnd = {"data":{"number":order_number,"payment":{"status":status_number,"message":"付款成功"}}}	
+			return json.dumps(dataBackToFrontEnd)
+		if result["status"] == 0:
+			return payment_status(0)
+		else :
+			return payment_status(1)
+
+def authorization():
+	try:
+		string = request.headers["Authorization"]
+		token = string[7:]
+		dataFromToken = jwt.decode(token, key, algorithms="HS256")
+		memberID = dataFromToken["id"]
+		memberEmail = dataFromToken["email"]
+		memberName = dataFromToken["name"]
+		return{"id":memberID,"email":memberEmail,"name":memberName}
+	except jwt.ExpiredSignatureError:
+		return {"error":True,"message":"請先登入"}
+	except Exception:
+		return {"error":True,"message":"Internal error"}
+@app.route("/api/order/<int:orderNumber>",methods=["GET"])
+def searchOrder(orderNumber):
+	authorization()	
+	mydbconnection = mydb.get_connection()
+	cursor = mydbconnection.cursor()
+	cursor.execute("SELECT attraction_id,date,time,price,booking.contact_name,booking.contact_email,booking.contact_phone,total_price,payment_status From booking_detail LEFT JOIN booking ON booking_detail.booking_id = booking.id WHERE booking.order_number = %(order_number)s ORDER BY booking_detail.date;",{"order_number":orderNumber})
+	result = cursor.fetchall()
+	mydbconnection.close()
+	print(result)
+	if result != []:
+		trip = []	
+		for x in result:
+			item = {}
+			attraction = {}
+			mydbconnection = mydb.get_connection()
+			cursor = mydbconnection.cursor()
+			cursor.execute("SELECT name,address,images FROM attraction WHERE id = %(id)s",{"id":x[0]})
+			attractionInformation = cursor.fetchall()
+			mydbconnection.close()
+			attraction["id"] = x[0]
+			attraction["name"] = attractionInformation[0][0]
+			attraction["address"] = attractionInformation[0][1]
+			attraction["image"] = splitJPGURL(attractionInformation[0][2])[0]
+			item["attraction"] = attraction
+			item["date"] = x[1].strftime("%Y-%m-%d")
+			item["time"] = x[2]		
+			trip.append(item)
+		data = {
+			"number": orderNumber,
+			"price": result[0][7],
+			"trip": trip,
+			"contact": {
+				"name": result[0][4],
+				"email": result[0][5],
+				"phone": result[0][6]
+			},
+			"status": result[0][8]
+		}	
+		return json.dumps({"data":data})
+	else:
+		return json.dumps({
+			"error": True,
+			"message": "no match order number"
+		})	
+
 
 app.run(host="0.0.0.0", port=3000)

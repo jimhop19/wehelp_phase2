@@ -1,0 +1,294 @@
+.navigation {
+  width: 1200px;
+  margin: 0px auto;
+  padding: 10px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (max-width: 1300px) {
+  .navigation {
+    width: 800px;
+  }
+}
+@media (max-width: 900px) {
+  .navigation {
+    width: 600px;
+  }
+}
+@media (max-width: 700px) {
+  .navigation {
+    width: 400px;
+  }
+}
+@media (max-width: 500px) {
+  .navigation {
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border-bottom: 0;
+  }
+}
+.navigation .navigation_title h2 {
+  white-space: nowrap;
+  color: var(--primary-color-cyan-70);
+}
+.navigation .navigation_title h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+.navigation .navigation_bar {
+  display: flex;
+}
+.navigation .navigation_bar #signOut {
+  display: block;
+}
+.navigation .navigation_bar p {
+  margin-left: 10px;
+}
+.navigation .navigation_bar p:hover {
+  cursor: pointer;
+}
+@media (max-width: 346px) {
+  .navigation .navigation_bar p {
+    width: 32px;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-left: 20px;
+    line-height: 16px;
+  }
+}
+
+hr {
+  margin: 0;
+  border-top: 1px solid #E8E8E8;
+}
+@media (max-width: 500px) {
+  hr {
+    display: none;
+  }
+}
+
+.main {
+  width: 1200px;
+  margin: 0px auto;
+}
+@media (max-width: 1300px) {
+  .main {
+    width: 800px;
+  }
+}
+@media (max-width: 900px) {
+  .main {
+    width: 600px;
+  }
+}
+@media (max-width: 700px) {
+  .main {
+    width: 400px;
+  }
+}
+@media (max-width: 500px) {
+  .main {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+}
+.main #main_orderSection .main_bookingItem {
+  padding: 0px 100px 40px;
+}
+@media (max-width: 900px) {
+  .main #main_orderSection .main_bookingItem {
+    padding: 0px 0px 40px;
+    margin-bottom: 30px;
+  }
+}
+.main #main_orderSection .main_bookingItem .itemInformation {
+  display: flex;
+  justify-content: start;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .main #main_orderSection .main_bookingItem .itemInformation {
+    display: block;
+  }
+}
+.main #main_orderSection .main_bookingItem .itemInformation .imgSection {
+  margin-right: 30px;
+  width: 250px;
+  height: 200px;
+  overflow: hidden;
+}
+@media (max-width: 1300px) {
+  .main #main_orderSection .main_bookingItem .itemInformation .imgSection {
+    width: 200px;
+  }
+}
+@media (max-width: 900px) {
+  .main #main_orderSection .main_bookingItem .itemInformation .imgSection {
+    width: 100%;
+    margin-bottom: 35px;
+  }
+}
+.main #main_orderSection .main_bookingItem .itemInformation .imgSection img {
+  min-width: 250px;
+  height: 100%;
+  display: block;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+@media (max-width: 900px) {
+  .main #main_orderSection .main_bookingItem .itemInformation .imgSection img {
+    min-width: 100%;
+  }
+}
+.main #main_orderSection .main_bookingItem .itemInformation .textSection {
+  padding-right: 100px;
+}
+@media (max-width: 1300px) {
+  .main #main_orderSection .main_bookingItem .itemInformation .textSection {
+    padding-right: 0px;
+    width: 25vw;
+  }
+}
+.main #main_orderSection .main_bookingItem .itemInformation .textSection p {
+  padding-bottom: 4px;
+  line-height: 28px;
+}
+.main #main_orderSection .main_bookingItem .itemInformation .textSection p:first-child {
+  padding-bottom: 20px;
+  color: var(--primary-color-cyan-70);
+}
+.main #main_orderSection .main_bookingItem .itemInformation .deleteButton {
+  height: 30px;
+  position: absolute;
+  right: 0px;
+}
+.main #main_orderSection .main_bookingItem .itemInformation .deleteButton:hover {
+  cursor: pointer;
+}
+.main btn {
+  display: block;
+  padding: 40px 100px 30px;
+}
+@media (max-width: 900px) {
+  .main btn {
+    padding: 40px 0px 30px;
+  }
+}
+.main .IdSection {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 0px 100px 10px;
+}
+.main .IdSection .messageForOrderID {
+  display: block;
+}
+@media (max-width: 900px) {
+  .main .IdSection .messageForOrderID {
+    padding: 0px 0px 40px;
+  }
+}
+.main .IdSection .copyButton {
+  margin-left: 20px;
+  padding: 5px 10px;
+  color: #FFFFFF;
+  background-color: var(--primary-color-cyan-70);
+}
+.main .IdSection .copyButton:hover {
+  cursor: pointer;
+}
+.main .IdSection .copySuccess {
+  opacity: 0;
+  margin-left: 5px;
+  font-size: 14px;
+  transition: 0.5s;
+  color: var(--primary-color-cyan-70);
+}
+.main .orderInformation {
+  padding: 30px 100px 10px;
+}
+.main .orderInformation p {
+  line-height: 30px;
+}
+
+.footer {
+  padding: 40px 0;
+  background-color: var(--secondary-color-gray-50);
+  text-align: center;
+  box-sizing: border-box;
+}
+.footer p {
+  color: #FFFFFF;
+}
+
+.darkenBackground {
+  display: none;
+  width: 100vw;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  position: absolute;
+  top: 0;
+}
+.darkenBackground .memberPage {
+  width: 340px;
+  margin: 80px auto;
+  border-radius: 6px;
+  background: #FFF;
+  box-shadow: 0px 4px 60px 0px #AAA;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+.darkenBackground .memberPage .decorationBar {
+  height: 10px;
+  background: var(--additional-color-dark-cyan-gradient-0-deg, linear-gradient(270deg, #378 0%, #6AB 100%));
+}
+.darkenBackground .memberPage img {
+  width: 16px;
+  position: absolute;
+  padding: 7px;
+  right: 10px;
+  top: 20px;
+}
+.darkenBackground .memberPage img:hover {
+  cursor: pointer;
+}
+.darkenBackground .memberPage .memberForm {
+  padding: 15px;
+}
+.darkenBackground .memberPage .memberForm input {
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  display: block;
+  box-sizing: border-box;
+  margin: 15px auto;
+  padding: 15px;
+  width: 100%;
+}
+.darkenBackground .memberPage .memberForm btn {
+  display: block;
+  padding: 15px 20px;
+  border-radius: 5px;
+  color: #FFF;
+  background-color: var(--primary-color-cyan-70);
+}
+.darkenBackground .memberPage .memberForm btn:hover {
+  cursor: pointer;
+}
+.darkenBackground .memberPage .memberForm p {
+  margin-top: 10px;
+  padding: 5px;
+}
+.darkenBackground .memberPage .memberForm p span:hover {
+  cursor: pointer;
+}
+.darkenBackground #signUpForm {
+  display: none;
+}
+.darkenBackground #signUpForm #successMessage {
+  display: none;
+}/*# sourceMappingURL=thankyou.css.map */
