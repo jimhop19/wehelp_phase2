@@ -4,9 +4,15 @@
 > + 前端：HTML, SCSS, JavaScript
 > + 後端：Python Flask 
 
+## 特點
++ RESTful API
++ 資料庫
+  > MySQL
+
 ## 功能
 + 商品頁面  
   * 響應式設計
   * 延遲載入
 + 會員系統
 + 結帳系統
+  > 串接TapPay
