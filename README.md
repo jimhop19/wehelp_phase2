@@ -28,8 +28,6 @@
 + 結帳系統
   > 串接TapPay
 + 商品頁面  
-  * 響應式設計
-    ![](https://github.com/jimhop19/wehelp_phase2/blob/main/demo%20picture/RWD)
-    <br>
+  * 響應式設計        
   * 延遲載入
     ![](https://github.com/jimhop19/wehelp_phase2/blob/main/demo%20picture/lazy%20loading%20s.gif)
