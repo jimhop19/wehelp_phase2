@@ -21,8 +21,7 @@
   >>> /\<orderNumber\>
 + 資料庫
   > MySQL
-
-<iframe src="https://drive.google.com/file/d/19Z6KKQdcxirdouFG7h-WEUo-7JsTHz0x/preview" width="640" height="480" allow="autoplay"></iframe>
+  ![](https://github.com/jimhop19/wehelp_phase2/blob/main/demo%20picture/database%20schema.png)
 
 ## 功能
 + 商品頁面  
