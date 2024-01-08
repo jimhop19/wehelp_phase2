@@ -6,6 +6,16 @@
 
 ## 特點
 + RESTful API
+  > API 架構
+  >> /api
+  >>> /user
+  >>>> /auth
+  >>> /attractions
+  >>>> /<attractionID>
+  >>> /mrts
+  >>> /booking
+  >>> /orders
+  >>>> /<orderNumber>
 + 資料庫
   > MySQL
 
