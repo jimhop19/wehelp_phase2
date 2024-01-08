@@ -21,6 +21,7 @@
   >>> /\<orderNumber\>
 + 資料庫
   > MySQL
+  > ![](https://drive.google.com/file/d/19Z6KKQdcxirdouFG7h-WEUo-7JsTHz0x/view?usp=sharing)
 
 ## 功能
 + 商品頁面  
