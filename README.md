@@ -6,7 +6,7 @@
 
 ## 特點
 + RESTful API
-  > API 架構
+  > API 架構：
   >> /api
   >>> /user
   >>>> /auth
