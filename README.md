@@ -10,6 +10,8 @@
   >> /api
   >>> /user
   >>>> /auth
+  >>>> + GET
+  >>>> + PUT
   >> 
   >>> /attractions
   >>>> /\<attractionID\>
@@ -17,9 +19,12 @@
   >>> /mrts
   >> 
   >>> /booking
+  >>> + GET
+  >>> + POST
+  >>> + DELETE
   >>  
   >>> /orders
-  >>>> /<orderNumber>
+  >>>> /\<orderNumber\>
 + 資料庫
   > MySQL
 
