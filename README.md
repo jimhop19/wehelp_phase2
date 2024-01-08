@@ -27,7 +27,7 @@
 + 商品頁面  
   * 響應式設計  
   * 延遲載入
-https://github.com/jimhop19/wehelp_phase2/assets/134208852/8c4a90dd-708a-486e-a8ee-08b5a329149d
+    ![](https://youtu.be/-vHoBTdZ6cQ)
 + 會員系統
 + 結帳系統
   > 串接TapPay
