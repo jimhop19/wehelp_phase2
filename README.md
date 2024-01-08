@@ -27,7 +27,7 @@
 + 商品頁面  
   * 響應式設計  
   * 延遲載入
-    ![](https://youtu.be/-vHoBTdZ6cQ)
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/-vHoBTdZ6cQ?si=elT9RX1ht6DNvdat" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 + 會員系統
 + 結帳系統
   > 串接TapPay
