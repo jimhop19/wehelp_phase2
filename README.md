@@ -5,8 +5,7 @@
 > + 後端：Python Flask 
 
 ## 特點
-+ RESTful API
-  > API 架構：
++ RESTful API  
   >> /api
   >>> /user
   >>>> /auth 
