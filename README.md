@@ -25,14 +25,14 @@
 
 ## 功能
 + 會員系統
-  > 測試帳號：test@gmail.com
+  > 測試帳號：test@gmail.com  
   > 測試密碼：test
 + 結帳系統
   > 串接TapPay
   > 測試卡號：
-    + 卡號：4242 4242 4242 4242
-    + CCV：123
-    + 卡片效期：使用超過目前年月份的效期即可
+  > + 卡號：4242 4242 4242 4242
+  > + CCV：123
+  > + 卡片效期：使用超過目前年月份的效期即可
 + 商品頁面  
   * 響應式設計
     ![](https://github.com/jimhop19/wehelp_phase2/blob/main/demo%20picture/RWD%20Website)   
