@@ -6,19 +6,19 @@
 
 ## 特點
 + RESTful API  
-  >> /api
-  >>> /user
-  >>>> /auth 
-  >> 
-  >>> /attractions
-  >>>> /\<attractionID\>
-  >> 
-  >>> /mrts
-  >> 
-  >>> /booking
-  >>  
-  >>> /orders
-  >>>> /\<orderNumber\>
+  > /api
+  >> /user
+  >>> /auth 
+  > 
+  >> /attractions
+  >>> /\<attractionID\>
+  > 
+  >> /mrts
+  > 
+  >> /booking
+  >  
+  >> /orders
+  >>> /\<orderNumber\>
 + 資料庫
   > MySQL
 
