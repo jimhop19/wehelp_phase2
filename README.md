@@ -10,10 +10,14 @@
   >> /api
   >>> /user
   >>>> /auth
+  >> 
   >>> /attractions
   >>>> /<attractionID>
+  >> 
   >>> /mrts
+  >> 
   >>> /booking
+  >>  
   >>> /orders
   >>>> /<orderNumber>
 + 資料庫
