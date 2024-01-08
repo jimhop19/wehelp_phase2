@@ -9,9 +9,7 @@
   > API 架構：
   >> /api
   >>> /user
-  >>>> /auth
-  >>>> + GET
-  >>>> + PUT
+  >>>> /auth 
   >> 
   >>> /attractions
   >>>> /\<attractionID\>
@@ -19,9 +17,6 @@
   >>> /mrts
   >> 
   >>> /booking
-  >>> + GET
-  >>> + POST
-  >>> + DELETE
   >>  
   >>> /orders
   >>>> /\<orderNumber\>
