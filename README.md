@@ -12,7 +12,7 @@
   >>>> /auth
   >> 
   >>> /attractions
-  >>>> \*/<attractionID>\*
+  >>>> /\<attractionID\>
   >> 
   >>> /mrts
   >> 
